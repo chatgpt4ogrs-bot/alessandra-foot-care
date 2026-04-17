@@ -1,0 +1,236 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+  ArrowLeft,
+  Pencil,
+  Trash2,
+  Stethoscope,
+  User,
+  FileText,
+  MessageCircle,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { SiteHeader } from "@/components/site-header";
+import { usePatient } from "@/hooks/use-patients";
+import { deletePatient, type Patient } from "@/lib/patients";
+import { toast } from "sonner";
+
+export const Route = createFileRoute("/paciente/$id")({
+  head: () => ({
+    meta: [{ title: "Paciente — Alessandra Podóloga" }],
+  }),
+  component: VerPaciente,
+});
+
+function Field({ label, value }: { label: string; value?: string }) {
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">
+        {label}
+      </p>
+      <p className="text-foreground mt-1 whitespace-pre-wrap">
+        {value && value.trim() ? value : <span className="text-muted-foreground/60">—</span>}
+      </p>
+    </div>
+  );
+}
+
+function YesNoBadge({ label, value }: { label: string; value: string }) {
+  const display =
+    value === "sim" ? "Sim" : value === "nao" ? "Não" : "—";
+  const cls =
+    value === "sim"
+      ? "bg-destructive/10 text-destructive"
+      : value === "nao"
+        ? "bg-primary/15 text-primary"
+        : "bg-muted text-muted-foreground";
+  return (
+    <div>
+      <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">
+        {label}
+      </p>
+      <span
+        className={`inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-sm font-medium ${cls}`}
+      >
+        {display}
+      </span>
+    </div>
+  );
+}
+
+function whatsappLink(p: Patient) {
+  const digits = p.telefone.replace(/\D/g, "");
+  if (!digits) return null;
+  const withCountry = digits.startsWith("55") ? digits : `55${digits}`;
+  return `https://wa.me/${withCountry}`;
+}
+
+function VerPaciente() {
+  const { id } = Route.useParams();
+  const { patient, loaded } = usePatient(id);
+  const navigate = useNavigate();
+
+  if (!loaded) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SiteHeader />
+      </div>
+    );
+  }
+
+  if (!patient) {
+    return (
+      <div className="min-h-screen bg-background">
+        <SiteHeader />
+        <main className="mx-auto max-w-3xl px-4 py-10 text-center">
+          <p className="text-muted-foreground mb-4">Paciente não encontrada.</p>
+          <Button asChild>
+            <Link to="/">Voltar</Link>
+          </Button>
+        </main>
+      </div>
+    );
+  }
+
+  const wa = whatsappLink(patient);
+
+  return (
+    <div className="min-h-screen bg-background">
+      <SiteHeader />
+      <main className="mx-auto max-w-3xl px-4 py-10 space-y-6">
+        <div className="flex items-center justify-between gap-3">
+          <Button asChild variant="ghost" size="sm">
+            <Link to="/">
+              <ArrowLeft className="h-4 w-4 mr-1" />
+              Voltar
+            </Link>
+          </Button>
+          <div className="flex gap-2">
+            {wa && (
+              <Button asChild variant="outline" size="sm">
+                <a href={wa} target="_blank" rel="noreferrer">
+                  <MessageCircle className="h-4 w-4 mr-1" />
+                  WhatsApp
+                </a>
+              </Button>
+            )}
+            <Button asChild size="sm">
+              <Link to="/paciente/$id/editar" params={{ id: patient.id }}>
+                <Pencil className="h-4 w-4 mr-1" />
+                Editar
+              </Link>
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir paciente?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Esta ação não pode ser desfeita.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={() => {
+                      deletePatient(patient.id);
+                      toast.success("Paciente excluída.");
+                      navigate({ to: "/" });
+                    }}
+                  >
+                    Excluir
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
+        </div>
+
+        <div>
+          <h2 className="font-serif text-3xl text-foreground">{patient.nome}</h2>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Stethoscope className="h-5 w-5 text-primary" />
+              Anamnese
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-5 md:grid-cols-3">
+            <YesNoBadge label="Diabetes" value={patient.diabetes} />
+            <YesNoBadge label="Hipertensão" value={patient.hipertensao} />
+            <YesNoBadge label="Gestante" value={patient.gestante} />
+            <div className="md:col-span-3">
+              <Field label="Medicamentos" value={patient.medicamentos} />
+            </div>
+            <div className="md:col-span-3">
+              <Field label="Alergias" value={patient.alergias} />
+            </div>
+            <div className="md:col-span-3">
+              <Field label="Problemas nos pés" value={patient.problemasPes} />
+            </div>
+            <div className="md:col-span-3">
+              <Field
+                label="Observações clínicas"
+                value={patient.observacoesClinicas}
+              />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <User className="h-5 w-5 text-primary" />
+              Dados Pessoais
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-5 md:grid-cols-2">
+            <Field label="CPF" value={patient.cpf} />
+            <Field
+              label="Data de nascimento"
+              value={
+                patient.dataNascimento
+                  ? new Date(patient.dataNascimento).toLocaleDateString("pt-BR")
+                  : ""
+              }
+            />
+            <Field label="Telefone" value={patient.telefone} />
+            <Field label="Email" value={patient.email} />
+            <div className="md:col-span-2">
+              <Field label="Endereço" value={patient.endereco} />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <FileText className="h-5 w-5 text-primary" />
+              Observações Finais
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Field label="" value={patient.observacoesFinais} />
+          </CardContent>
+        </Card>
+      </main>
+    </div>
+  );
+}
