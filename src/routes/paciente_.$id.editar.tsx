@@ -4,7 +4,7 @@ import { PatientForm } from "@/components/patient-form";
 import { usePatient } from "@/hooks/use-patients";
 import { Button } from "@/components/ui/button";
 
-export const Route = createFileRoute("/paciente/$id/editar")({
+export const Route = createFileRoute("/paciente_/$id/editar")({
   head: () => ({
     meta: [{ title: "Editar Paciente — Alessandra Podóloga" }],
   }),
