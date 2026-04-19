@@ -1,6 +1,14 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Stethoscope, User, FileText, Save, ArrowLeft } from "lucide-react";
+import {
+  Stethoscope,
+  User,
+  FileText,
+  Save,
+  ArrowLeft,
+  Footprints,
+  HeartPulse,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -58,6 +66,83 @@ function YesNoField({
   );
 }
 
+function OptionsField<T extends string>({
+  label,
+  value,
+  onChange,
+  name,
+  options,
+}: {
+  label: string;
+  value: T | "";
+  onChange: (v: T | "") => void;
+  name: string;
+  options: { value: T; label: string }[];
+}) {
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium">{label}</Label>
+      <RadioGroup
+        value={value}
+        onValueChange={(v) => onChange(v as T)}
+        className="flex flex-wrap gap-x-6 gap-y-2"
+      >
+        {options.map((opt) => (
+          <div key={opt.value} className="flex items-center gap-2">
+            <RadioGroupItem value={opt.value} id={`${name}-${opt.value}`} />
+            <Label
+              htmlFor={`${name}-${opt.value}`}
+              className="font-normal cursor-pointer"
+            >
+              {opt.label}
+            </Label>
+          </div>
+        ))}
+      </RadioGroup>
+    </div>
+  );
+}
+
+function ConditionalYesNoField({
+  label,
+  value,
+  onChange,
+  name,
+  detailLabel,
+  detailValue,
+  onDetailChange,
+  detailPlaceholder,
+}: {
+  label: string;
+  value: YesNo;
+  onChange: (v: YesNo) => void;
+  name: string;
+  detailLabel: string;
+  detailValue: string;
+  onDetailChange: (v: string) => void;
+  detailPlaceholder?: string;
+}) {
+  return (
+    <div className="space-y-3 md:col-span-2">
+      <YesNoField label={label} value={value} onChange={onChange} name={name} />
+      {value === "sim" && (
+        <div className="space-y-2 border-l-2 border-primary/30 pl-4">
+          <Label htmlFor={`${name}-detalhe`} className="text-sm">
+            {detailLabel} <span className="text-destructive">*</span>
+          </Label>
+          <Textarea
+            id={`${name}-detalhe`}
+            value={detailValue}
+            onChange={(e) => onDetailChange(e.target.value)}
+            placeholder={detailPlaceholder}
+            required
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
   const navigate = useNavigate();
   const [data, setData] = useState<PatientInput>(initial ?? emptyPatient);
@@ -69,6 +154,21 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
     e.preventDefault();
     if (!data.nome.trim()) {
       toast.error("Informe o nome do paciente.");
+      return;
+    }
+    if (
+      data.cirurgiaMembrosInferiores === "sim" &&
+      !data.cirurgiaMembrosInferioresQual.trim()
+    ) {
+      toast.error("Informe qual cirurgia nos membros inferiores.");
+      return;
+    }
+    if (data.praticaEsporte === "sim" && !data.praticaEsporteQual.trim()) {
+      toast.error("Informe qual esporte é praticado.");
+      return;
+    }
+    if (data.tomaMedicamento === "sim" && !data.tomaMedicamentoQual.trim()) {
+      toast.error("Informe qual medicamento é utilizado.");
       return;
     }
     if (mode === "create") {
@@ -109,10 +209,10 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
         </CardHeader>
         <CardContent className="grid gap-5 md:grid-cols-2">
           <YesNoField
-            label="Possui diabetes?"
-            value={data.diabetes}
-            onChange={(v) => set("diabetes", v)}
-            name="diabetes"
+            label="Está gestante?"
+            value={data.gestante}
+            onChange={(v) => set("gestante", v)}
+            name="gestante"
           />
           <YesNoField
             label="Possui hipertensão?"
@@ -120,21 +220,40 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
             onChange={(v) => set("hipertensao", v)}
             name="hipertensao"
           />
-          <YesNoField
-            label="Está gestante?"
-            value={data.gestante}
-            onChange={(v) => set("gestante", v)}
-            name="gestante"
+
+          <ConditionalYesNoField
+            label="Já fez cirurgia nos membros inferiores?"
+            value={data.cirurgiaMembrosInferiores}
+            onChange={(v) => set("cirurgiaMembrosInferiores", v)}
+            name="cirurgia"
+            detailLabel="Qual cirurgia?"
+            detailValue={data.cirurgiaMembrosInferioresQual}
+            onDetailChange={(v) => set("cirurgiaMembrosInferioresQual", v)}
+            detailPlaceholder="Descreva a cirurgia realizada..."
           />
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="medicamentos">Faz uso de medicamentos?</Label>
-            <Textarea
-              id="medicamentos"
-              value={data.medicamentos}
-              onChange={(e) => set("medicamentos", e.target.value)}
-              placeholder="Liste os medicamentos..."
-            />
-          </div>
+
+          <ConditionalYesNoField
+            label="Pratica algum esporte?"
+            value={data.praticaEsporte}
+            onChange={(v) => set("praticaEsporte", v)}
+            name="esporte"
+            detailLabel="Qual esporte?"
+            detailValue={data.praticaEsporteQual}
+            onDetailChange={(v) => set("praticaEsporteQual", v)}
+            detailPlaceholder="Ex: corrida, futebol, natação..."
+          />
+
+          <ConditionalYesNoField
+            label="Toma algum medicamento?"
+            value={data.tomaMedicamento}
+            onChange={(v) => set("tomaMedicamento", v)}
+            name="medicamento"
+            detailLabel="Qual medicamento?"
+            detailValue={data.tomaMedicamentoQual}
+            onDetailChange={(v) => set("tomaMedicamentoQual", v)}
+            detailPlaceholder="Liste os medicamentos..."
+          />
+
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="alergias">Possui alergias?</Label>
             <Textarea
@@ -162,6 +281,92 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
               rows={3}
             />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Footprints className="h-5 w-5 text-primary" />
+            Hábitos
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 md:grid-cols-2">
+          <OptionsField
+            label="Tipo de calçado que mais usa"
+            value={data.tipoCalcado}
+            onChange={(v) => set("tipoCalcado", v)}
+            name="calcado"
+            options={[
+              { value: "aberto", label: "Aberto" },
+              { value: "fechado", label: "Fechado" },
+              { value: "salto", label: "Salto" },
+              { value: "sapato_baixo", label: "Sapato baixo" },
+            ]}
+          />
+          <OptionsField
+            label="Tipo de meia que mais usa"
+            value={data.tipoMeia}
+            onChange={(v) => set("tipoMeia", v)}
+            name="meia"
+            options={[
+              { value: "algodao", label: "Algodão" },
+              { value: "nylon", label: "Nylon" },
+            ]}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <HeartPulse className="h-5 w-5 text-primary" />
+            Condições de Saúde
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 md:grid-cols-2">
+          <YesNoField
+            label="Marca-passo ou pinos?"
+            value={data.marcaPassosPinos}
+            onChange={(v) => set("marcaPassosPinos", v)}
+            name="marcapasso"
+          />
+          <YesNoField
+            label="Problemas cancerígenos (teve ou tem)?"
+            value={data.problemasCancerigenos}
+            onChange={(v) => set("problemasCancerigenos", v)}
+            name="cancer"
+          />
+          <YesNoField
+            label="Pressão alta?"
+            value={data.pressaoAlta}
+            onChange={(v) => set("pressaoAlta", v)}
+            name="pressao"
+          />
+          <YesNoField
+            label="Diabetes?"
+            value={data.diabetesCondicao}
+            onChange={(v) => set("diabetesCondicao", v)}
+            name="diabetes-cond"
+          />
+          <YesNoField
+            label="Convulsões?"
+            value={data.convulsoes}
+            onChange={(v) => set("convulsoes", v)}
+            name="convulsoes"
+          />
+          <YesNoField
+            label="Problemas circulatórios?"
+            value={data.problemasCirculatorios}
+            onChange={(v) => set("problemasCirculatorios", v)}
+            name="circulatorios"
+          />
+          <YesNoField
+            label="Alergia?"
+            value={data.alergia}
+            onChange={(v) => set("alergia", v)}
+            name="alergia-cond"
+          />
         </CardContent>
       </Card>
 

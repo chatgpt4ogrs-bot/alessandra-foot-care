@@ -7,6 +7,8 @@ import {
   User,
   FileText,
   MessageCircle,
+  Footprints,
+  HeartPulse,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -173,12 +175,41 @@ function VerPaciente() {
             </CardTitle>
           </CardHeader>
           <CardContent className="grid gap-5 md:grid-cols-3">
-            <YesNoBadge label="Diabetes" value={patient.diabetes} />
-            <YesNoBadge label="Hipertensão" value={patient.hipertensao} />
             <YesNoBadge label="Gestante" value={patient.gestante} />
-            <div className="md:col-span-3">
-              <Field label="Medicamentos" value={patient.medicamentos} />
-            </div>
+            <YesNoBadge label="Hipertensão" value={patient.hipertensao} />
+            <YesNoBadge
+              label="Cirurgia membros inf."
+              value={patient.cirurgiaMembrosInferiores}
+            />
+            {patient.cirurgiaMembrosInferiores === "sim" && (
+              <div className="md:col-span-3">
+                <Field
+                  label="Qual cirurgia"
+                  value={patient.cirurgiaMembrosInferioresQual}
+                />
+              </div>
+            )}
+            <YesNoBadge
+              label="Pratica esporte"
+              value={patient.praticaEsporte}
+            />
+            {patient.praticaEsporte === "sim" && (
+              <div className="md:col-span-3">
+                <Field label="Qual esporte" value={patient.praticaEsporteQual} />
+              </div>
+            )}
+            <YesNoBadge
+              label="Toma medicamento"
+              value={patient.tomaMedicamento}
+            />
+            {patient.tomaMedicamento === "sim" && (
+              <div className="md:col-span-3">
+                <Field
+                  label="Qual medicamento"
+                  value={patient.tomaMedicamentoQual}
+                />
+              </div>
+            )}
             <div className="md:col-span-3">
               <Field label="Alergias" value={patient.alergias} />
             </div>
@@ -191,6 +222,66 @@ function VerPaciente() {
                 value={patient.observacoesClinicas}
               />
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Footprints className="h-5 w-5 text-primary" />
+              Hábitos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-5 md:grid-cols-2">
+            <Field
+              label="Tipo de calçado"
+              value={
+                {
+                  aberto: "Aberto",
+                  fechado: "Fechado",
+                  salto: "Salto",
+                  sapato_baixo: "Sapato baixo",
+                  "": "",
+                }[patient.tipoCalcado]
+              }
+            />
+            <Field
+              label="Tipo de meia"
+              value={
+                {
+                  algodao: "Algodão",
+                  nylon: "Nylon",
+                  "": "",
+                }[patient.tipoMeia]
+              }
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <HeartPulse className="h-5 w-5 text-primary" />
+              Condições de Saúde
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid gap-5 md:grid-cols-3">
+            <YesNoBadge
+              label="Marca-passo / pinos"
+              value={patient.marcaPassosPinos}
+            />
+            <YesNoBadge
+              label="Problemas cancerígenos"
+              value={patient.problemasCancerigenos}
+            />
+            <YesNoBadge label="Pressão alta" value={patient.pressaoAlta} />
+            <YesNoBadge label="Diabetes" value={patient.diabetesCondicao} />
+            <YesNoBadge label="Convulsões" value={patient.convulsoes} />
+            <YesNoBadge
+              label="Problemas circulatórios"
+              value={patient.problemasCirculatorios}
+            />
+            <YesNoBadge label="Alergia" value={patient.alergia} />
           </CardContent>
         </Card>
 
