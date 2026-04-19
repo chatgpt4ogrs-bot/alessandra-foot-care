@@ -209,10 +209,10 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
         </CardHeader>
         <CardContent className="grid gap-5 md:grid-cols-2">
           <YesNoField
-            label="Possui diabetes?"
-            value={data.diabetes}
-            onChange={(v) => set("diabetes", v)}
-            name="diabetes"
+            label="Está gestante?"
+            value={data.gestante}
+            onChange={(v) => set("gestante", v)}
+            name="gestante"
           />
           <YesNoField
             label="Possui hipertensão?"
@@ -220,21 +220,40 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
             onChange={(v) => set("hipertensao", v)}
             name="hipertensao"
           />
-          <YesNoField
-            label="Está gestante?"
-            value={data.gestante}
-            onChange={(v) => set("gestante", v)}
-            name="gestante"
+
+          <ConditionalYesNoField
+            label="Já fez cirurgia nos membros inferiores?"
+            value={data.cirurgiaMembrosInferiores}
+            onChange={(v) => set("cirurgiaMembrosInferiores", v)}
+            name="cirurgia"
+            detailLabel="Qual cirurgia?"
+            detailValue={data.cirurgiaMembrosInferioresQual}
+            onDetailChange={(v) => set("cirurgiaMembrosInferioresQual", v)}
+            detailPlaceholder="Descreva a cirurgia realizada..."
           />
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="medicamentos">Faz uso de medicamentos?</Label>
-            <Textarea
-              id="medicamentos"
-              value={data.medicamentos}
-              onChange={(e) => set("medicamentos", e.target.value)}
-              placeholder="Liste os medicamentos..."
-            />
-          </div>
+
+          <ConditionalYesNoField
+            label="Pratica algum esporte?"
+            value={data.praticaEsporte}
+            onChange={(v) => set("praticaEsporte", v)}
+            name="esporte"
+            detailLabel="Qual esporte?"
+            detailValue={data.praticaEsporteQual}
+            onDetailChange={(v) => set("praticaEsporteQual", v)}
+            detailPlaceholder="Ex: corrida, futebol, natação..."
+          />
+
+          <ConditionalYesNoField
+            label="Toma algum medicamento?"
+            value={data.tomaMedicamento}
+            onChange={(v) => set("tomaMedicamento", v)}
+            name="medicamento"
+            detailLabel="Qual medicamento?"
+            detailValue={data.tomaMedicamentoQual}
+            onDetailChange={(v) => set("tomaMedicamentoQual", v)}
+            detailPlaceholder="Liste os medicamentos..."
+          />
+
           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="alergias">Possui alergias?</Label>
             <Textarea
@@ -262,6 +281,92 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
               rows={3}
             />
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <Footprints className="h-5 w-5 text-primary" />
+            Hábitos
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 md:grid-cols-2">
+          <OptionsField
+            label="Tipo de calçado que mais usa"
+            value={data.tipoCalcado}
+            onChange={(v) => set("tipoCalcado", v)}
+            name="calcado"
+            options={[
+              { value: "aberto", label: "Aberto" },
+              { value: "fechado", label: "Fechado" },
+              { value: "salto", label: "Salto" },
+              { value: "sapato_baixo", label: "Sapato baixo" },
+            ]}
+          />
+          <OptionsField
+            label="Tipo de meia que mais usa"
+            value={data.tipoMeia}
+            onChange={(v) => set("tipoMeia", v)}
+            name="meia"
+            options={[
+              { value: "algodao", label: "Algodão" },
+              { value: "nylon", label: "Nylon" },
+            ]}
+          />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <HeartPulse className="h-5 w-5 text-primary" />
+            Condições de Saúde
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 md:grid-cols-2">
+          <YesNoField
+            label="Marca-passo ou pinos?"
+            value={data.marcaPassosPinos}
+            onChange={(v) => set("marcaPassosPinos", v)}
+            name="marcapasso"
+          />
+          <YesNoField
+            label="Problemas cancerígenos (teve ou tem)?"
+            value={data.problemasCancerigenos}
+            onChange={(v) => set("problemasCancerigenos", v)}
+            name="cancer"
+          />
+          <YesNoField
+            label="Pressão alta?"
+            value={data.pressaoAlta}
+            onChange={(v) => set("pressaoAlta", v)}
+            name="pressao"
+          />
+          <YesNoField
+            label="Diabetes?"
+            value={data.diabetesCondicao}
+            onChange={(v) => set("diabetesCondicao", v)}
+            name="diabetes-cond"
+          />
+          <YesNoField
+            label="Convulsões?"
+            value={data.convulsoes}
+            onChange={(v) => set("convulsoes", v)}
+            name="convulsoes"
+          />
+          <YesNoField
+            label="Problemas circulatórios?"
+            value={data.problemasCirculatorios}
+            onChange={(v) => set("problemasCirculatorios", v)}
+            name="circulatorios"
+          />
+          <YesNoField
+            label="Alergia?"
+            value={data.alergia}
+            onChange={(v) => set("alergia", v)}
+            name="alergia-cond"
+          />
         </CardContent>
       </Card>
 
