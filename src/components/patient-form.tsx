@@ -1,6 +1,14 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import { Stethoscope, User, FileText, Save, ArrowLeft } from "lucide-react";
+import {
+  Stethoscope,
+  User,
+  FileText,
+  Save,
+  ArrowLeft,
+  Footprints,
+  HeartPulse,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -54,6 +62,83 @@ function YesNoField({
           </Label>
         </div>
       </RadioGroup>
+    </div>
+  );
+}
+
+function OptionsField<T extends string>({
+  label,
+  value,
+  onChange,
+  name,
+  options,
+}: {
+  label: string;
+  value: T | "";
+  onChange: (v: T | "") => void;
+  name: string;
+  options: { value: T; label: string }[];
+}) {
+  return (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium">{label}</Label>
+      <RadioGroup
+        value={value}
+        onValueChange={(v) => onChange(v as T)}
+        className="flex flex-wrap gap-x-6 gap-y-2"
+      >
+        {options.map((opt) => (
+          <div key={opt.value} className="flex items-center gap-2">
+            <RadioGroupItem value={opt.value} id={`${name}-${opt.value}`} />
+            <Label
+              htmlFor={`${name}-${opt.value}`}
+              className="font-normal cursor-pointer"
+            >
+              {opt.label}
+            </Label>
+          </div>
+        ))}
+      </RadioGroup>
+    </div>
+  );
+}
+
+function ConditionalYesNoField({
+  label,
+  value,
+  onChange,
+  name,
+  detailLabel,
+  detailValue,
+  onDetailChange,
+  detailPlaceholder,
+}: {
+  label: string;
+  value: YesNo;
+  onChange: (v: YesNo) => void;
+  name: string;
+  detailLabel: string;
+  detailValue: string;
+  onDetailChange: (v: string) => void;
+  detailPlaceholder?: string;
+}) {
+  return (
+    <div className="space-y-3 md:col-span-2">
+      <YesNoField label={label} value={value} onChange={onChange} name={name} />
+      {value === "sim" && (
+        <div className="space-y-2 border-l-2 border-primary/30 pl-4">
+          <Label htmlFor={`${name}-detalhe`} className="text-sm">
+            {detailLabel} <span className="text-destructive">*</span>
+          </Label>
+          <Textarea
+            id={`${name}-detalhe`}
+            value={detailValue}
+            onChange={(e) => onDetailChange(e.target.value)}
+            placeholder={detailPlaceholder}
+            required
+          />
+        </div>
+      )}
     </div>
   );
 }
