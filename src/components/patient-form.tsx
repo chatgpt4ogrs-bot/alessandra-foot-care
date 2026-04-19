@@ -156,6 +156,21 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
       toast.error("Informe o nome do paciente.");
       return;
     }
+    if (
+      data.cirurgiaMembrosInferiores === "sim" &&
+      !data.cirurgiaMembrosInferioresQual.trim()
+    ) {
+      toast.error("Informe qual cirurgia nos membros inferiores.");
+      return;
+    }
+    if (data.praticaEsporte === "sim" && !data.praticaEsporteQual.trim()) {
+      toast.error("Informe qual esporte é praticado.");
+      return;
+    }
+    if (data.tomaMedicamento === "sim" && !data.tomaMedicamentoQual.trim()) {
+      toast.error("Informe qual medicamento é utilizado.");
+      return;
+    }
     if (mode === "create") {
       const p = createPatient(data);
       toast.success("Paciente cadastrado!");
