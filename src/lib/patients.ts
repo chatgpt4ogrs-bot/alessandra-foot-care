@@ -1,4 +1,6 @@
 export type YesNo = "sim" | "nao" | "";
+export type TipoCalcado = "aberto" | "fechado" | "salto" | "sapato_baixo" | "";
+export type TipoMeia = "algodao" | "nylon" | "";
 
 export interface Patient {
   id: string;
@@ -19,6 +21,24 @@ export interface Patient {
   problemasPes: string;
   gestante: YesNo;
   observacoesClinicas: string;
+  // Hábitos
+  tipoCalcado: TipoCalcado;
+  tipoMeia: TipoMeia;
+  // Histórico médico
+  cirurgiaMembrosInferiores: YesNo;
+  cirurgiaMembrosInferioresQual: string;
+  praticaEsporte: YesNo;
+  praticaEsporteQual: string;
+  tomaMedicamento: YesNo;
+  tomaMedicamentoQual: string;
+  // Condições
+  marcaPassosPinos: YesNo;
+  problemasCancerigenos: YesNo;
+  pressaoAlta: YesNo;
+  diabetesCondicao: YesNo;
+  convulsoes: YesNo;
+  problemasCirculatorios: YesNo;
+  alergia: YesNo;
   // Observações finais
   observacoesFinais: string;
 }
