@@ -9,7 +9,7 @@ export function SiteHeader() {
           <img
             src={logo}
             alt="Alessandra Corsi — Podóloga"
-            className="h-20 md:h-24 w-auto object-contain scale-150 origin-left drop-shadow-sm"
+            className="h-20 md:h-24 w-auto object-contain scale-[2] origin-left drop-shadow-sm"
           />
           <span className="sr-only">Alessandra Corsi — Podóloga</span>
         </Link>
