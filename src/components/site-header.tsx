@@ -3,7 +3,7 @@ import logo from "@/assets/logo-alessandra.png";
 
 export function SiteHeader() {
   return (
-    <header className="border-b border-border/60 bg-card/60 backdrop-blur rounded-sm">
+    <header className="border-b border-border/30 bg-card/60 backdrop-blur rounded-sm">
       <div className="mx-auto max-w-5xl px-4 py-4 flex items-center gap-3">
         <Link to="/" className="flex items-center gap-3 group">
           <img
