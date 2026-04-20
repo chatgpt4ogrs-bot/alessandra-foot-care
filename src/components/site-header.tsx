@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import logo from "@/assets/logo-alessandra.jpeg";
+import logo from "@/assets/logo-alessandra.png";
 
 export function SiteHeader() {
   return (
@@ -8,12 +8,10 @@ export function SiteHeader() {
         <Link to="/" className="flex items-center gap-3 group">
           <img
             src={logo}
-            alt="Alessandra Corsi Nascimento — Podóloga"
-            className="h-14 w-auto object-contain"
+            alt="Alessandra Corsi — Podóloga"
+            className="h-24 md:h-28 w-auto object-contain"
           />
-          <span className="sr-only">
-            Alessandra Corsi Nascimento — Podóloga
-          </span>
+          <span className="sr-only">Alessandra Corsi — Podóloga</span>
         </Link>
       </div>
     </header>
