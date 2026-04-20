@@ -37,6 +37,7 @@ export function AgendaView() {
   const [patientId, setPatientId] = useState("");
   const [time, setTime] = useState("");
   const [notes, setNotes] = useState("");
+  const [quickOpen, setQuickOpen] = useState(false);
 
   const dayAppointments = useMemo(() => {
     return appointments
