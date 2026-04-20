@@ -125,19 +125,41 @@ export function AgendaView() {
               {patients.length === 0 ? (
                 <div className="py-6 text-center">
                   <p className="text-sm text-muted-foreground mb-3">
-                    Cadastre uma paciente antes de agendar.
+                    Nenhuma paciente cadastrada ainda.
                   </p>
-                  <Button asChild size="sm">
-                    <Link to="/novo">
-                      <Plus className="h-4 w-4 mr-1" />
-                      Cadastrar Paciente
-                    </Link>
-                  </Button>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => setQuickOpen(true)}
+                    >
+                      <UserPlus className="h-4 w-4 mr-1" />
+                      Novo paciente
+                    </Button>
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/novo">
+                        <Plus className="h-4 w-4 mr-1" />
+                        Cadastro completo
+                      </Link>
+                    </Button>
+                  </div>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="grid gap-4">
                   <div className="grid gap-2">
-                    <Label>Paciente</Label>
+                    <div className="flex items-center justify-between gap-2">
+                      <Label>Paciente</Label>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-primary hover:text-primary"
+                        onClick={() => setQuickOpen(true)}
+                      >
+                        <UserPlus className="h-3.5 w-3.5 mr-1" />
+                        Novo paciente
+                      </Button>
+                    </div>
                     <Select value={patientId} onValueChange={setPatientId}>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione a paciente" />
