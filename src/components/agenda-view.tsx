@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { format, isSameDay, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { CalendarIcon, Clock, Plus, Trash2, User, CalendarDays } from "lucide-react";
+import { CalendarIcon, Clock, Plus, Trash2, User, CalendarDays, UserPlus } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -24,6 +24,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { QuickPatientDialog } from "@/components/quick-patient-dialog";
 import { usePatients } from "@/hooks/use-patients";
 import { useAppointments } from "@/hooks/use-appointments";
 import { createAppointment, deleteAppointment } from "@/lib/appointments";
