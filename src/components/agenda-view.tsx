@@ -290,6 +290,13 @@ export function AgendaView() {
           </div>
         </div>
       </div>
+
+      <QuickPatientDialog
+        open={quickOpen}
+        onOpenChange={setQuickOpen}
+        initialDate={selectedDate}
+        onCreated={(newId) => setPatientId(newId)}
+      />
     </div>
   );
 }
