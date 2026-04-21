@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Users, CalendarDays } from "lucide-react";
+import { Users, CalendarDays, Package } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SiteHeader } from "@/components/site-header";
 import { PatientsList } from "@/components/patients-list";
 import { AgendaView } from "@/components/agenda-view";
+import { StockView } from "@/components/stock-view";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -34,6 +35,10 @@ function Dashboard() {
               <CalendarDays className="h-4 w-4" />
               Agenda
             </TabsTrigger>
+            <TabsTrigger value="estoque" className="gap-1.5 px-4">
+              <Package className="h-4 w-4" />
+              Estoque
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="pacientes">
@@ -42,6 +47,10 @@ function Dashboard() {
 
           <TabsContent value="agenda">
             <AgendaView />
+          </TabsContent>
+
+          <TabsContent value="estoque">
+            <StockView />
           </TabsContent>
         </Tabs>
       </main>
