@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import logo from "@/assets/logo-alessandra.png";
+import logo from "@/assets/logo-alessandra.jpeg";
 
 export function SiteHeader() {
   return (
