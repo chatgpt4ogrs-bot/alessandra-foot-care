@@ -4,7 +4,7 @@ import logo from "@/assets/logo-alessandra-inicial.png";
 export function SiteHeader() {
   return (
     <header className="border-b border-border/30 bg-white">
-      <div className="mx-auto max-w-5xl px-4 py-4 flex justify-center">
+      <div className="mx-auto max-w-5xl px-4 py-4 flex justify-start">
         <Link to="/" className="block">
           <img
             src={logo}
