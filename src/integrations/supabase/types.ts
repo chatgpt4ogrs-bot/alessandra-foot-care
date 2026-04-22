@@ -14,7 +14,185 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agendamentos: {
+        Row: {
+          created_at: string
+          data: string
+          horario: string
+          id: string
+          observacoes: string | null
+          paciente_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data: string
+          horario: string
+          id?: string
+          observacoes?: string | null
+          paciente_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          horario?: string
+          id?: string
+          observacoes?: string | null
+          paciente_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agendamentos_paciente_id_fkey"
+            columns: ["paciente_id"]
+            isOneToOne: false
+            referencedRelation: "pacientes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      estoque: {
+        Row: {
+          created_at: string
+          id: string
+          nome: string
+          observacao: string | null
+          quantidade: number
+          quantidade_minima: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          nome: string
+          observacao?: string | null
+          quantidade?: number
+          quantidade_minima?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          nome?: string
+          observacao?: string | null
+          quantidade?: number
+          quantidade_minima?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      pacientes: {
+        Row: {
+          alergia: string | null
+          alergias: string | null
+          cirurgia_membros_inferiores: string | null
+          cirurgia_membros_inferiores_qual: string | null
+          convulsoes: string | null
+          cpf: string | null
+          created_at: string
+          data_nascimento: string | null
+          diabetes: string | null
+          diabetes_condicao: string | null
+          email: string | null
+          endereco: string | null
+          gestante: string | null
+          hipertensao: string | null
+          id: string
+          marca_passos_pinos: string | null
+          medicamentos: string | null
+          nome: string
+          observacoes_clinicas: string | null
+          observacoes_finais: string | null
+          pratica_esporte: string | null
+          pratica_esporte_qual: string | null
+          pressao_alta: string | null
+          problemas_cancerigenos: string | null
+          problemas_circulatorios: string | null
+          problemas_pes: string | null
+          telefone: string | null
+          tipo_calcado: string | null
+          tipo_meia: string | null
+          toma_medicamento: string | null
+          toma_medicamento_qual: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alergia?: string | null
+          alergias?: string | null
+          cirurgia_membros_inferiores?: string | null
+          cirurgia_membros_inferiores_qual?: string | null
+          convulsoes?: string | null
+          cpf?: string | null
+          created_at?: string
+          data_nascimento?: string | null
+          diabetes?: string | null
+          diabetes_condicao?: string | null
+          email?: string | null
+          endereco?: string | null
+          gestante?: string | null
+          hipertensao?: string | null
+          id?: string
+          marca_passos_pinos?: string | null
+          medicamentos?: string | null
+          nome: string
+          observacoes_clinicas?: string | null
+          observacoes_finais?: string | null
+          pratica_esporte?: string | null
+          pratica_esporte_qual?: string | null
+          pressao_alta?: string | null
+          problemas_cancerigenos?: string | null
+          problemas_circulatorios?: string | null
+          problemas_pes?: string | null
+          telefone?: string | null
+          tipo_calcado?: string | null
+          tipo_meia?: string | null
+          toma_medicamento?: string | null
+          toma_medicamento_qual?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alergia?: string | null
+          alergias?: string | null
+          cirurgia_membros_inferiores?: string | null
+          cirurgia_membros_inferiores_qual?: string | null
+          convulsoes?: string | null
+          cpf?: string | null
+          created_at?: string
+          data_nascimento?: string | null
+          diabetes?: string | null
+          diabetes_condicao?: string | null
+          email?: string | null
+          endereco?: string | null
+          gestante?: string | null
+          hipertensao?: string | null
+          id?: string
+          marca_passos_pinos?: string | null
+          medicamentos?: string | null
+          nome?: string
+          observacoes_clinicas?: string | null
+          observacoes_finais?: string | null
+          pratica_esporte?: string | null
+          pratica_esporte_qual?: string | null
+          pressao_alta?: string | null
+          problemas_cancerigenos?: string | null
+          problemas_circulatorios?: string | null
+          problemas_pes?: string | null
+          telefone?: string | null
+          tipo_calcado?: string | null
+          tipo_meia?: string | null
+          toma_medicamento?: string | null
+          toma_medicamento_qual?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
