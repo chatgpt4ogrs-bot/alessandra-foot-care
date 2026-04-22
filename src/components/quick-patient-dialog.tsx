@@ -54,7 +54,7 @@ export function QuickPatientDialog({
     }
   }, [open, initialDate]);
 
-  function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!nome.trim()) {
       toast.error("Informe o nome da paciente.");
@@ -69,13 +69,17 @@ export function QuickPatientDialog({
       return;
     }
 
-    const patient = createPatient({
+    const patient = await createPatient({
       ...emptyPatient,
       nome: nome.trim(),
       telefone: telefone.trim(),
     });
+    if (!patient) {
+      toast.error("Erro ao cadastrar paciente.");
+      return;
+    }
 
-    createAppointment({
+    await createAppointment({
       patientId: patient.id,
       date: format(date, "yyyy-MM-dd"),
       time,

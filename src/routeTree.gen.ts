@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as NovoRouteImport } from './routes/novo'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PacienteIdRouteImport } from './routes/paciente.$id'
 import { Route as PacienteIdEditarRouteImport } from './routes/paciente_.$id.editar'
@@ -17,6 +18,11 @@ import { Route as PacienteIdEditarRouteImport } from './routes/paciente_.$id.edi
 const NovoRoute = NovoRouteImport.update({
   id: '/novo',
   path: '/novo',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -37,12 +43,14 @@ const PacienteIdEditarRoute = PacienteIdEditarRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/novo': typeof NovoRoute
   '/paciente/$id': typeof PacienteIdRoute
   '/paciente/$id/editar': typeof PacienteIdEditarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/novo': typeof NovoRoute
   '/paciente/$id': typeof PacienteIdRoute
   '/paciente/$id/editar': typeof PacienteIdEditarRoute
@@ -50,20 +58,28 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/novo': typeof NovoRoute
   '/paciente/$id': typeof PacienteIdRoute
   '/paciente_/$id/editar': typeof PacienteIdEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/novo' | '/paciente/$id' | '/paciente/$id/editar'
+  fullPaths: '/' | '/auth' | '/novo' | '/paciente/$id' | '/paciente/$id/editar'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/novo' | '/paciente/$id' | '/paciente/$id/editar'
-  id: '__root__' | '/' | '/novo' | '/paciente/$id' | '/paciente_/$id/editar'
+  to: '/' | '/auth' | '/novo' | '/paciente/$id' | '/paciente/$id/editar'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/novo'
+    | '/paciente/$id'
+    | '/paciente_/$id/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthRoute: typeof AuthRoute
   NovoRoute: typeof NovoRoute
   PacienteIdRoute: typeof PacienteIdRoute
   PacienteIdEditarRoute: typeof PacienteIdEditarRoute
@@ -76,6 +92,13 @@ declare module '@tanstack/react-router' {
       path: '/novo'
       fullPath: '/novo'
       preLoaderRoute: typeof NovoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -104,6 +127,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthRoute: AuthRoute,
   NovoRoute: NovoRoute,
   PacienteIdRoute: PacienteIdRoute,
   PacienteIdEditarRoute: PacienteIdEditarRoute,
@@ -111,12 +135,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}

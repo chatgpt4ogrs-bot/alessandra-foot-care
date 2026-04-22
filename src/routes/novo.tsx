@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { SiteHeader } from "@/components/site-header";
 import { PatientForm } from "@/components/patient-form";
+import { RequireAuth } from "@/components/require-auth";
 
 export const Route = createFileRoute("/novo")({
   head: () => ({
@@ -14,14 +15,16 @@ export const Route = createFileRoute("/novo")({
 
 function NovoPaciente() {
   return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <main className="mx-auto max-w-3xl px-4 py-10">
-        <h2 className="font-serif text-3xl text-foreground mb-6">
-          Nova Paciente
-        </h2>
-        <PatientForm mode="create" />
-      </main>
-    </div>
+    <RequireAuth>
+      <div className="min-h-screen bg-background">
+        <SiteHeader />
+        <main className="mx-auto max-w-3xl px-4 py-10">
+          <h2 className="font-serif text-3xl text-foreground mb-6">
+            Nova Paciente
+          </h2>
+          <PatientForm mode="create" />
+        </main>
+      </div>
+    </RequireAuth>
   );
 }

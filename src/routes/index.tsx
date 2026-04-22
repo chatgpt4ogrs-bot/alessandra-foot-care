@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/site-header";
 import { PatientsList } from "@/components/patients-list";
 import { AgendaView } from "@/components/agenda-view";
 import { StockView } from "@/components/stock-view";
+import { RequireAuth } from "@/components/require-auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -22,38 +23,40 @@ export const Route = createFileRoute("/")({
 
 function Dashboard() {
   return (
-    <div className="min-h-screen bg-background">
-      <SiteHeader />
-      <main className="mx-auto max-w-5xl px-4 py-10">
-        <Tabs defaultValue="pacientes" className="w-full">
-          <TabsList className="mb-8 h-11 bg-muted/60">
-            <TabsTrigger value="pacientes" className="gap-1.5 px-4">
-              <Users className="h-4 w-4" />
-              Pacientes
-            </TabsTrigger>
-            <TabsTrigger value="agenda" className="gap-1.5 px-4">
-              <CalendarDays className="h-4 w-4" />
-              Agenda
-            </TabsTrigger>
-            <TabsTrigger value="estoque" className="gap-1.5 px-4">
-              <Package className="h-4 w-4" />
-              Estoque
-            </TabsTrigger>
-          </TabsList>
+    <RequireAuth>
+      <div className="min-h-screen bg-background">
+        <SiteHeader />
+        <main className="mx-auto max-w-5xl px-4 py-10">
+          <Tabs defaultValue="pacientes" className="w-full">
+            <TabsList className="mb-8 h-11 bg-muted/60">
+              <TabsTrigger value="pacientes" className="gap-1.5 px-4">
+                <Users className="h-4 w-4" />
+                Pacientes
+              </TabsTrigger>
+              <TabsTrigger value="agenda" className="gap-1.5 px-4">
+                <CalendarDays className="h-4 w-4" />
+                Agenda
+              </TabsTrigger>
+              <TabsTrigger value="estoque" className="gap-1.5 px-4">
+                <Package className="h-4 w-4" />
+                Estoque
+              </TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="pacientes">
-            <PatientsList />
-          </TabsContent>
+            <TabsContent value="pacientes">
+              <PatientsList />
+            </TabsContent>
 
-          <TabsContent value="agenda">
-            <AgendaView />
-          </TabsContent>
+            <TabsContent value="agenda">
+              <AgendaView />
+            </TabsContent>
 
-          <TabsContent value="estoque">
-            <StockView />
-          </TabsContent>
-        </Tabs>
-      </main>
-    </div>
+            <TabsContent value="estoque">
+              <StockView />
+            </TabsContent>
+          </Tabs>
+        </main>
+      </div>
+    </RequireAuth>
   );
 }

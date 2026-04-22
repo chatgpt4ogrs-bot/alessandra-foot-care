@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
 import { getAllAppointments, type Appointment } from "@/lib/appointments";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useAppointments() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setAppointments(getAllAppointments());
-    setLoaded(true);
-    const handler = () => setAppointments(getAllAppointments());
+    let cancelled = false;
+    const load = async () => {
+      const all = await getAllAppointments();
+      if (!cancelled) {
+        setAppointments(all);
+        setLoaded(true);
+      }
+    };
+    load();
+    const handler = () => load();
     window.addEventListener("appointments-updated", handler);
-    window.addEventListener("storage", handler);
+    const { data: sub } = supabase.auth.onAuthStateChange(() => load());
     return () => {
+      cancelled = true;
       window.removeEventListener("appointments-updated", handler);
-      window.removeEventListener("storage", handler);
+      sub.subscription.unsubscribe();
     };
   }, []);
 

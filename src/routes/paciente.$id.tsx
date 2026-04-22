@@ -24,6 +24,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { SiteHeader } from "@/components/site-header";
+import { RequireAuth } from "@/components/require-auth";
 import { usePatient } from "@/hooks/use-patients";
 import { deletePatient, type Patient } from "@/lib/patients";
 import { toast } from "sonner";
@@ -108,6 +109,7 @@ function VerPaciente() {
   const wa = whatsappLink(patient);
 
   return (
+    <RequireAuth>
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-4 py-10 space-y-6">
@@ -149,8 +151,8 @@ function VerPaciente() {
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={() => {
-                      deletePatient(patient.id);
+                    onClick={async () => {
+                      await deletePatient(patient.id);
                       toast.success("Paciente excluída.");
                       navigate({ to: "/" });
                     }}
@@ -323,5 +325,6 @@ function VerPaciente() {
         </Card>
       </main>
     </div>
+    </RequireAuth>
   );
 }
