@@ -150,7 +150,7 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
   const set = <K extends keyof PatientInput>(key: K, value: PatientInput[K]) =>
     setData((prev) => ({ ...prev, [key]: value }));
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!data.nome.trim()) {
       toast.error("Informe o nome do paciente.");
@@ -172,11 +172,15 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
       return;
     }
     if (mode === "create") {
-      const p = createPatient(data);
+      const p = await createPatient(data);
+      if (!p) {
+        toast.error("Erro ao cadastrar paciente.");
+        return;
+      }
       toast.success("Paciente cadastrado!");
       navigate({ to: "/paciente/$id", params: { id: p.id } });
     } else if (patientId) {
-      updatePatient(patientId, data);
+      await updatePatient(patientId, data);
       toast.success("Paciente atualizado!");
       navigate({ to: "/paciente/$id", params: { id: patientId } });
     }
