@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
-import { AlertTriangle, Package, Pencil, Plus, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { AlertTriangle, Minus, Package, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -43,6 +43,52 @@ export function StockView() {
   const [form, setForm] = useState<ProductInput>(emptyProduct);
   const [confirmDelete, setConfirmDelete] = useState<Product | null>(null);
   const [alertedIds, setAlertedIds] = useState<Set<string>>(new Set());
+  const [stepValues, setStepValues] = useState<Record<string, string>>({});
+  const [flashIds, setFlashIds] = useState<Set<string>>(new Set());
+  const flashTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+
+  function flash(id: string) {
+    setFlashIds((prev) => {
+      const next = new Set(prev);
+      next.add(id);
+      return next;
+    });
+    if (flashTimers.current[id]) clearTimeout(flashTimers.current[id]);
+    flashTimers.current[id] = setTimeout(() => {
+      setFlashIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, 600);
+  }
+
+  function adjustStock(p: Product, delta: number) {
+    const raw = stepValues[p.id];
+    const step = raw && raw.trim() !== "" ? Math.abs(Number(raw)) || 1 : 1;
+    const change = delta > 0 ? step : -step;
+    const newQty = p.quantidade + change;
+    if (newQty < 0) {
+      toast.error("Quantidade insuficiente em estoque");
+      return;
+    }
+    updateProduct(p.id, {
+      nome: p.nome,
+      quantidade: newQty,
+      quantidadeMinima: p.quantidadeMinima,
+      observacao: p.observacao,
+    });
+    flash(p.id);
+    // Resetar alerta para que dispare novamente caso volte a ficar baixo
+    if (newQty > p.quantidadeMinima) {
+      setAlertedIds((prev) => {
+        if (!prev.has(p.id)) return prev;
+        const next = new Set(prev);
+        next.delete(p.id);
+        return next;
+      });
+    }
+  }
 
   const sorted = useMemo(() => {
     return [...products].sort((a, b) => {
@@ -208,9 +254,9 @@ export function StockView() {
             return (
               <Card
                 key={p.id}
-                className={`p-4 flex items-center gap-4 flex-wrap transition-colors ${
+                className={`p-4 flex items-center gap-4 flex-wrap transition-all duration-300 ${
                   low ? "border-destructive/40 bg-destructive/5" : ""
-                }`}
+                } ${flashIds.has(p.id) ? "ring-2 ring-primary/50 scale-[1.005]" : ""}`}
               >
                 <div className="flex-1 min-w-[200px]">
                   <div className="flex items-center gap-2 flex-wrap">
@@ -225,7 +271,8 @@ export function StockView() {
                   <p className="text-sm text-muted-foreground mt-1">
                     Quantidade:{" "}
                     <span
-                      className={`font-medium ${low ? "text-destructive" : "text-foreground"}`}
+                      key={p.quantidade}
+                      className={`font-medium tabular-nums inline-block transition-all ${low ? "text-destructive" : "text-foreground"} ${flashIds.has(p.id) ? "scale-110" : ""}`}
                     >
                       {p.quantidade}
                     </span>{" "}
@@ -236,6 +283,38 @@ export function StockView() {
                       {p.observacao}
                     </p>
                   )}
+                </div>
+                <div className="flex items-center gap-1 rounded-md border border-input bg-background p-1">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => adjustStock(p, -1)}
+                    aria-label="Retirar do estoque"
+                  >
+                    <Minus className="h-3.5 w-3.5" />
+                  </Button>
+                  <Input
+                    type="number"
+                    min={1}
+                    value={stepValues[p.id] ?? ""}
+                    onChange={(e) =>
+                      setStepValues((prev) => ({ ...prev, [p.id]: e.target.value }))
+                    }
+                    placeholder="1"
+                    className="h-7 w-14 text-center text-sm border-0 shadow-none focus-visible:ring-0 px-1"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7"
+                    onClick={() => adjustStock(p, 1)}
+                    aria-label="Adicionar ao estoque"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
                 <div className="flex gap-2">
                   <Button
