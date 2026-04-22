@@ -109,6 +109,7 @@ function VerPaciente() {
   const wa = whatsappLink(patient);
 
   return (
+    <RequireAuth>
     <div className="min-h-screen bg-background">
       <SiteHeader />
       <main className="mx-auto max-w-3xl px-4 py-10 space-y-6">
