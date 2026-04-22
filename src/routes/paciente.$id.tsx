@@ -325,5 +325,6 @@ function VerPaciente() {
         </Card>
       </main>
     </div>
+    </RequireAuth>
   );
 }
