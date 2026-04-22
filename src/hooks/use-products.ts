@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
 import { getAllProducts, type Product } from "@/lib/products";
+import { supabase } from "@/integrations/supabase/client";
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setProducts(getAllProducts());
-    setLoaded(true);
-    const handler = () => setProducts(getAllProducts());
+    let cancelled = false;
+    const load = async () => {
+      const all = await getAllProducts();
+      if (!cancelled) {
+        setProducts(all);
+        setLoaded(true);
+      }
+    };
+    load();
+    const handler = () => load();
     window.addEventListener("products-updated", handler);
-    window.addEventListener("storage", handler);
+    const { data: sub } = supabase.auth.onAuthStateChange(() => load());
     return () => {
+      cancelled = true;
       window.removeEventListener("products-updated", handler);
-      window.removeEventListener("storage", handler);
+      sub.subscription.unsubscribe();
     };
   }, []);
 

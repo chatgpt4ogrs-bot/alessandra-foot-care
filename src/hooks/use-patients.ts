@@ -1,19 +1,28 @@
 import { useEffect, useState } from "react";
-import { getAllPatients, type Patient } from "@/lib/patients";
+import { getAllPatients, getPatient, type Patient } from "@/lib/patients";
+import { supabase } from "@/integrations/supabase/client";
 
 export function usePatients() {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setPatients(getAllPatients());
-    setLoaded(true);
-    const handler = () => setPatients(getAllPatients());
+    let cancelled = false;
+    const load = async () => {
+      const all = await getAllPatients();
+      if (!cancelled) {
+        setPatients(all);
+        setLoaded(true);
+      }
+    };
+    load();
+    const handler = () => load();
     window.addEventListener("patients-updated", handler);
-    window.addEventListener("storage", handler);
+    const { data: sub } = supabase.auth.onAuthStateChange(() => load());
     return () => {
+      cancelled = true;
       window.removeEventListener("patients-updated", handler);
-      window.removeEventListener("storage", handler);
+      sub.subscription.unsubscribe();
     };
   }, []);
 
@@ -25,18 +34,24 @@ export function usePatient(id: string | undefined) {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
+    let cancelled = false;
     if (!id) {
       setLoaded(true);
       return;
     }
-    const refresh = () => {
-      const all = getAllPatients();
-      setPatient(all.find((p) => p.id === id) ?? null);
-      setLoaded(true);
+    const refresh = async () => {
+      const p = await getPatient(id);
+      if (!cancelled) {
+        setPatient(p);
+        setLoaded(true);
+      }
     };
     refresh();
     window.addEventListener("patients-updated", refresh);
-    return () => window.removeEventListener("patients-updated", refresh);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("patients-updated", refresh);
+    };
   }, [id]);
 
   return { patient, loaded };

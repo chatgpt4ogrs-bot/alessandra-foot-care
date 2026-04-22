@@ -1,3 +1,5 @@
+import { supabase } from "@/integrations/supabase/client";
+
 export interface Product {
   id: string;
   createdAt: string;
@@ -10,59 +12,83 @@ export interface Product {
 
 export type ProductInput = Omit<Product, "id" | "createdAt" | "updatedAt">;
 
-const STORAGE_KEY = "alessandra-podologa-products";
-
-function isBrowser() {
-  return typeof window !== "undefined";
+function notify() {
+  if (typeof window !== "undefined")
+    window.dispatchEvent(new Event("products-updated"));
 }
 
-export function getAllProducts(): Product[] {
-  if (!isBrowser()) return [];
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return [];
-    const parsed = JSON.parse(raw);
-    if (!Array.isArray(parsed)) return [];
-    return parsed as Product[];
-  } catch {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function rowToProduct(r: any): Product {
+  return {
+    id: r.id,
+    createdAt: r.created_at,
+    updatedAt: r.updated_at,
+    nome: r.nome,
+    quantidade: r.quantidade ?? 0,
+    quantidadeMinima: r.quantidade_minima ?? 0,
+    observacao: r.observacao ?? "",
+  };
+}
+
+export async function getAllProducts(): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from("estoque")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.error(error);
     return [];
   }
+  return (data ?? []).map(rowToProduct);
 }
 
-function save(products: Product[]) {
-  if (!isBrowser()) return;
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(products));
-  window.dispatchEvent(new Event("products-updated"));
+export async function createProduct(input: ProductInput): Promise<Product | null> {
+  const { data: userData } = await supabase.auth.getUser();
+  const userId = userData.user?.id;
+  if (!userId) return null;
+  const { data, error } = await supabase
+    .from("estoque")
+    .insert({
+      user_id: userId,
+      nome: input.nome,
+      quantidade: input.quantidade,
+      quantidade_minima: input.quantidadeMinima,
+      observacao: input.observacao,
+    })
+    .select()
+    .single();
+  if (error || !data) {
+    console.error(error);
+    return null;
+  }
+  notify();
+  return rowToProduct(data);
 }
 
-export function createProduct(input: ProductInput): Product {
-  const now = new Date().toISOString();
-  const product: Product = {
-    ...input,
-    id: crypto.randomUUID(),
-    createdAt: now,
-    updatedAt: now,
-  };
-  save([product, ...getAllProducts()]);
-  return product;
+export async function updateProduct(
+  id: string,
+  input: ProductInput,
+): Promise<Product | null> {
+  const { data, error } = await supabase
+    .from("estoque")
+    .update({
+      nome: input.nome,
+      quantidade: input.quantidade,
+      quantidade_minima: input.quantidadeMinima,
+      observacao: input.observacao,
+    })
+    .eq("id", id)
+    .select()
+    .single();
+  if (error || !data) return null;
+  notify();
+  return rowToProduct(data);
 }
 
-export function updateProduct(id: string, input: ProductInput): Product | null {
-  const all = getAllProducts();
-  const idx = all.findIndex((p) => p.id === id);
-  if (idx === -1) return null;
-  const updated: Product = {
-    ...all[idx],
-    ...input,
-    updatedAt: new Date().toISOString(),
-  };
-  all[idx] = updated;
-  save(all);
-  return updated;
-}
-
-export function deleteProduct(id: string) {
-  save(getAllProducts().filter((p) => p.id !== id));
+export async function deleteProduct(id: string): Promise<void> {
+  const { error } = await supabase.from("estoque").delete().eq("id", id);
+  if (error) console.error(error);
+  notify();
 }
 
 export function isLowStock(p: Product) {
