@@ -24,6 +24,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { SiteHeader } from "@/components/site-header";
+import { RequireAuth } from "@/components/require-auth";
 import { usePatient } from "@/hooks/use-patients";
 import { deletePatient, type Patient } from "@/lib/patients";
 import { toast } from "sonner";
