@@ -149,8 +149,8 @@ function VerPaciente() {
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={() => {
-                      deletePatient(patient.id);
+                    onClick={async () => {
+                      await deletePatient(patient.id);
                       toast.success("Paciente excluída.");
                       navigate({ to: "/" });
                     }}
