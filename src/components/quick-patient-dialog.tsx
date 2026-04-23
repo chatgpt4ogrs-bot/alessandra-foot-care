@@ -69,26 +69,28 @@ export function QuickPatientDialog({
       return;
     }
 
-    const patient = await createPatient({
-      ...emptyPatient,
-      nome: nome.trim(),
-      telefone: telefone.trim(),
-    });
-    if (!patient) {
-      toast.error("Erro ao cadastrar paciente.");
-      return;
+    try {
+      const patient = await createPatient({
+        ...emptyPatient,
+        nome: nome.trim(),
+        telefone: telefone.trim(),
+      });
+
+      await createAppointment({
+        patientId: patient.id,
+        date: format(date, "yyyy-MM-dd"),
+        time,
+        notes,
+      });
+
+      toast.success("Paciente cadastrado e atendimento agendado com sucesso");
+      onCreated(patient.id);
+      onOpenChange(false);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro desconhecido.";
+      console.error("[QuickPatientDialog] failed:", err);
+      toast.error(`Erro ao cadastrar: ${msg}`);
     }
-
-    await createAppointment({
-      patientId: patient.id,
-      date: format(date, "yyyy-MM-dd"),
-      time,
-      notes,
-    });
-
-    toast.success("Paciente cadastrado e atendimento agendado com sucesso");
-    onCreated(patient.id);
-    onOpenChange(false);
   }
 
   return (
