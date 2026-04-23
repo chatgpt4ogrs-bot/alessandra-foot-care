@@ -140,18 +140,27 @@ export async function getPatient(id: string): Promise<Patient | null> {
   return rowToPatient(data);
 }
 
-export async function createPatient(input: PatientInput): Promise<Patient | null> {
-  const { data: userData } = await supabase.auth.getUser();
+export async function createPatient(input: PatientInput): Promise<Patient> {
+  const { data: userData, error: userErr } = await supabase.auth.getUser();
+  if (userErr) {
+    console.error("[createPatient] getUser error:", userErr);
+    throw new Error("Não foi possível identificar o usuário logado. Faça login novamente.");
+  }
   const userId = userData.user?.id;
-  if (!userId) return null;
+  if (!userId) {
+    throw new Error("Sessão expirada. Faça login novamente.");
+  }
   const { data, error } = await supabase
     .from("pacientes")
     .insert({ ...inputToRow(input), user_id: userId })
     .select()
     .single();
-  if (error || !data) {
-    console.error(error);
-    return null;
+  if (error) {
+    console.error("[createPatient] insert error:", error);
+    throw new Error(error.message || "Erro ao salvar no banco de dados.");
+  }
+  if (!data) {
+    throw new Error("Resposta vazia do banco de dados.");
   }
   notify();
   return rowToPatient(data);
@@ -160,21 +169,28 @@ export async function createPatient(input: PatientInput): Promise<Patient | null
 export async function updatePatient(
   id: string,
   input: PatientInput,
-): Promise<Patient | null> {
+): Promise<Patient> {
   const { data, error } = await supabase
     .from("pacientes")
     .update(inputToRow(input))
     .eq("id", id)
     .select()
     .single();
-  if (error || !data) return null;
+  if (error) {
+    console.error("[updatePatient] error:", error);
+    throw new Error(error.message || "Erro ao atualizar paciente.");
+  }
+  if (!data) throw new Error("Paciente não encontrado.");
   notify();
   return rowToPatient(data);
 }
 
 export async function deletePatient(id: string): Promise<void> {
   const { error } = await supabase.from("pacientes").delete().eq("id", id);
-  if (error) console.error(error);
+  if (error) {
+    console.error("[deletePatient] error:", error);
+    throw new Error(error.message);
+  }
   notify();
 }
 

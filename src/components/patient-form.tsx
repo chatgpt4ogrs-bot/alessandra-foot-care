@@ -171,18 +171,20 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
       toast.error("Informe qual medicamento é utilizado.");
       return;
     }
-    if (mode === "create") {
-      const p = await createPatient(data);
-      if (!p) {
-        toast.error("Erro ao cadastrar paciente.");
-        return;
+    try {
+      if (mode === "create") {
+        const p = await createPatient(data);
+        toast.success("Paciente cadastrado!");
+        navigate({ to: "/paciente/$id", params: { id: p.id } });
+      } else if (patientId) {
+        await updatePatient(patientId, data);
+        toast.success("Paciente atualizado!");
+        navigate({ to: "/paciente/$id", params: { id: patientId } });
       }
-      toast.success("Paciente cadastrado!");
-      navigate({ to: "/paciente/$id", params: { id: p.id } });
-    } else if (patientId) {
-      await updatePatient(patientId, data);
-      toast.success("Paciente atualizado!");
-      navigate({ to: "/paciente/$id", params: { id: patientId } });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Erro desconhecido.";
+      console.error("[PatientForm] submit failed:", err);
+      toast.error(`Erro ao salvar: ${msg}`);
     }
   };
 
