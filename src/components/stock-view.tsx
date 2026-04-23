@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { AlertTriangle, Minus, Package, Pencil, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -36,95 +36,197 @@ import {
   type ProductInput,
 } from "@/lib/products";
 
+/* ----------------------- linha de produto memoizada ----------------------- */
+
+interface RowProps {
+  product: Product;
+  onAdjust: (p: Product, delta: number, step: number) => void;
+  onEdit: (p: Product) => void;
+  onDelete: (p: Product) => void;
+}
+
+const ProductRow = memo(function ProductRow({
+  product: p,
+  onAdjust,
+  onEdit,
+  onDelete,
+}: RowProps) {
+  const [stepValue, setStepValue] = useState("");
+  const low = isLowStock(p);
+
+  const step = useMemo(() => {
+    if (!stepValue.trim()) return 1;
+    const n = Math.abs(Number(stepValue));
+    return Number.isFinite(n) && n > 0 ? n : 1;
+  }, [stepValue]);
+
+  return (
+    <Card
+      className={`p-4 flex items-center gap-4 flex-wrap ${
+        low ? "border-destructive/40 bg-destructive/5" : ""
+      }`}
+    >
+      <div className="flex-1 min-w-[200px]">
+        <div className="flex items-center gap-2 flex-wrap">
+          <h3 className="font-medium text-foreground">{p.nome}</h3>
+          {low && (
+            <Badge variant="destructive" className="gap-1">
+              <AlertTriangle className="h-3 w-3" />
+              Estoque baixo
+            </Badge>
+          )}
+        </div>
+        <p className="text-sm text-muted-foreground mt-1">
+          Quantidade:{" "}
+          <span
+            className={`font-medium tabular-nums ${
+              low ? "text-destructive" : "text-foreground"
+            }`}
+          >
+            {p.quantidade}
+          </span>{" "}
+          · Mínimo: {p.quantidadeMinima}
+        </p>
+        {p.observacao && (
+          <p className="text-xs text-muted-foreground mt-1">{p.observacao}</p>
+        )}
+      </div>
+      <div className="flex items-center gap-1 rounded-md border border-input bg-background p-1">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => onAdjust(p, -1, step)}
+          aria-label="Retirar do estoque"
+        >
+          <Minus className="h-3.5 w-3.5" />
+        </Button>
+        <Input
+          type="number"
+          min={1}
+          value={stepValue}
+          onChange={(e) => setStepValue(e.target.value)}
+          placeholder="1"
+          className="h-7 w-14 text-center text-sm border-0 shadow-none focus-visible:ring-0 px-1"
+        />
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-7 w-7"
+          onClick={() => onAdjust(p, 1, step)}
+          aria-label="Adicionar ao estoque"
+        >
+          <Plus className="h-3.5 w-3.5" />
+        </Button>
+      </div>
+      <div className="flex gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onEdit(p)}
+          className="gap-1"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+          Editar
+        </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onDelete(p)}
+          className="gap-1 text-destructive hover:text-destructive"
+        >
+          <Trash2 className="h-3.5 w-3.5" />
+          Excluir
+        </Button>
+      </div>
+    </Card>
+  );
+});
+
+/* ------------------------------- view raiz ------------------------------- */
+
 export function StockView() {
   const { products, loaded } = useProducts();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState<ProductInput>(emptyProduct);
   const [confirmDelete, setConfirmDelete] = useState<Product | null>(null);
-  const [alertedIds, setAlertedIds] = useState<Set<string>>(new Set());
-  const [stepValues, setStepValues] = useState<Record<string, string>>({});
-  const [flashIds, setFlashIds] = useState<Set<string>>(new Set());
-  const flashTimers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
+  const alertedRef = useRef<Set<string>>(new Set());
 
-  function flash(id: string) {
-    setFlashIds((prev) => {
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
-    if (flashTimers.current[id]) clearTimeout(flashTimers.current[id]);
-    flashTimers.current[id] = setTimeout(() => {
-      setFlashIds((prev) => {
-        const next = new Set(prev);
-        next.delete(id);
-        return next;
-      });
-    }, 600);
-  }
-
-  function adjustStock(p: Product, delta: number) {
-    const raw = stepValues[p.id];
-    const step = raw && raw.trim() !== "" ? Math.abs(Number(raw)) || 1 : 1;
-    const change = delta > 0 ? step : -step;
-    const newQty = p.quantidade + change;
-    if (newQty < 0) {
-      toast.error("Quantidade insuficiente em estoque");
-      return;
-    }
-    updateProduct(p.id, {
-      nome: p.nome,
-      quantidade: newQty,
-      quantidadeMinima: p.quantidadeMinima,
-      observacao: p.observacao,
-    });
-    flash(p.id);
-    // Resetar alerta para que dispare novamente caso volte a ficar baixo
-    if (newQty > p.quantidadeMinima) {
-      setAlertedIds((prev) => {
-        if (!prev.has(p.id)) return prev;
-        const next = new Set(prev);
-        next.delete(p.id);
-        return next;
-      });
-    }
-  }
+  // Estado local "espelho" para atualização otimista instantânea
+  const [localProducts, setLocalProducts] = useState<Product[]>(products);
+  useEffect(() => {
+    setLocalProducts(products);
+  }, [products]);
 
   const sorted = useMemo(() => {
-    return [...products].sort((a, b) => {
+    return [...localProducts].sort((a, b) => {
       const aLow = isLowStock(a) ? 0 : 1;
       const bLow = isLowStock(b) ? 0 : 1;
       if (aLow !== bLow) return aLow - bLow;
       return a.quantidade - b.quantidade;
     });
-  }, [products]);
+  }, [localProducts]);
 
-  // Alerta automático ao entrar na aba / quando produtos ficam baixos
+  // Alerta automático de estoque baixo (sem causar re-render)
   useEffect(() => {
     if (!loaded) return;
-    const lows = products.filter(isLowStock);
-    const newOnes = lows.filter((p) => !alertedIds.has(p.id));
-    if (newOnes.length === 0) return;
-    newOnes.forEach((p) => {
-      toast.warning(`⚠️ Atenção: o produto ${p.nome} está com estoque baixo`, {
-        description: `Quantidade atual: ${p.quantidade} (mínimo: ${p.quantidadeMinima})`,
-        duration: 6000,
-      });
+    localProducts.forEach((p) => {
+      if (isLowStock(p)) {
+        if (!alertedRef.current.has(p.id)) {
+          alertedRef.current.add(p.id);
+          toast.warning(`⚠️ Atenção: ${p.nome} está com estoque baixo`, {
+            description: `Quantidade atual: ${p.quantidade} (mínimo: ${p.quantidadeMinima})`,
+            duration: 5000,
+          });
+        }
+      } else {
+        alertedRef.current.delete(p.id);
+      }
     });
-    setAlertedIds((prev) => {
-      const next = new Set(prev);
-      newOnes.forEach((p) => next.add(p.id));
-      return next;
-    });
-  }, [products, loaded, alertedIds]);
+  }, [localProducts, loaded]);
 
-  function openNew() {
+  const handleAdjust = useCallback(
+    (p: Product, delta: number, step: number) => {
+      const change = delta > 0 ? step : -step;
+      const newQty = p.quantidade + change;
+      if (newQty < 0) {
+        toast.error("Quantidade insuficiente em estoque");
+        return;
+      }
+      // Atualização otimista — UI responde imediatamente
+      setLocalProducts((prev) =>
+        prev.map((it) => (it.id === p.id ? { ...it, quantidade: newQty } : it)),
+      );
+      // Persiste em background
+      updateProduct(p.id, {
+        nome: p.nome,
+        quantidade: newQty,
+        quantidadeMinima: p.quantidadeMinima,
+        observacao: p.observacao,
+      }).catch((err) => {
+        console.error("[stock] update failed", err);
+        toast.error("Falha ao salvar. Recarregando...");
+        // Reverte em caso de erro
+        setLocalProducts((prev) =>
+          prev.map((it) =>
+            it.id === p.id ? { ...it, quantidade: p.quantidade } : it,
+          ),
+        );
+      });
+    },
+    [],
+  );
+
+  const openNew = useCallback(() => {
     setEditing(null);
     setForm(emptyProduct);
     setDialogOpen(true);
-  }
+  }, []);
 
-  function openEdit(p: Product) {
+  const openEdit = useCallback((p: Product) => {
     setEditing(p);
     setForm({
       nome: p.nome,
@@ -133,7 +235,11 @@ export function StockView() {
       observacao: p.observacao,
     });
     setDialogOpen(true);
-  }
+  }, []);
+
+  const askDelete = useCallback((p: Product) => {
+    setConfirmDelete(p);
+  }, []);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -165,7 +271,7 @@ export function StockView() {
           <h2 className="font-serif text-3xl text-foreground">Estoque</h2>
           <p className="text-sm text-muted-foreground mt-1">
             {loaded
-              ? `${products.length} ${products.length === 1 ? "produto cadastrado" : "produtos cadastrados"}.`
+              ? `${localProducts.length} ${localProducts.length === 1 ? "produto cadastrado" : "produtos cadastrados"}.`
               : "Carregando..."}
           </p>
         </div>
@@ -240,7 +346,7 @@ export function StockView() {
         </Dialog>
       </div>
 
-      {loaded && products.length === 0 ? (
+      {loaded && localProducts.length === 0 ? (
         <Card className="p-10 text-center">
           <Package className="mx-auto h-10 w-10 text-muted-foreground" />
           <p className="mt-3 text-sm text-muted-foreground">
@@ -249,96 +355,15 @@ export function StockView() {
         </Card>
       ) : (
         <div className="space-y-3">
-          {sorted.map((p) => {
-            const low = isLowStock(p);
-            return (
-              <Card
-                key={p.id}
-                className={`p-4 flex items-center gap-4 flex-wrap transition-all duration-300 ${
-                  low ? "border-destructive/40 bg-destructive/5" : ""
-                } ${flashIds.has(p.id) ? "ring-2 ring-primary/50 scale-[1.005]" : ""}`}
-              >
-                <div className="flex-1 min-w-[200px]">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-medium text-foreground">{p.nome}</h3>
-                    {low && (
-                      <Badge variant="destructive" className="gap-1">
-                        <AlertTriangle className="h-3 w-3" />
-                        Estoque baixo
-                      </Badge>
-                    )}
-                  </div>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Quantidade:{" "}
-                    <span
-                      key={p.quantidade}
-                      className={`font-medium tabular-nums inline-block transition-all ${low ? "text-destructive" : "text-foreground"} ${flashIds.has(p.id) ? "scale-110" : ""}`}
-                    >
-                      {p.quantidade}
-                    </span>{" "}
-                    · Mínimo: {p.quantidadeMinima}
-                  </p>
-                  {p.observacao && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {p.observacao}
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-1 rounded-md border border-input bg-background p-1">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => adjustStock(p, -1)}
-                    aria-label="Retirar do estoque"
-                  >
-                    <Minus className="h-3.5 w-3.5" />
-                  </Button>
-                  <Input
-                    type="number"
-                    min={1}
-                    value={stepValues[p.id] ?? ""}
-                    onChange={(e) =>
-                      setStepValues((prev) => ({ ...prev, [p.id]: e.target.value }))
-                    }
-                    placeholder="1"
-                    className="h-7 w-14 text-center text-sm border-0 shadow-none focus-visible:ring-0 px-1"
-                  />
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7"
-                    onClick={() => adjustStock(p, 1)}
-                    aria-label="Adicionar ao estoque"
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                  </Button>
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => openEdit(p)}
-                    className="gap-1"
-                  >
-                    <Pencil className="h-3.5 w-3.5" />
-                    Editar
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setConfirmDelete(p)}
-                    className="gap-1 text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    Excluir
-                  </Button>
-                </div>
-              </Card>
-            );
-          })}
+          {sorted.map((p) => (
+            <ProductRow
+              key={p.id}
+              product={p}
+              onAdjust={handleAdjust}
+              onEdit={openEdit}
+              onDelete={askDelete}
+            />
+          ))}
         </div>
       )}
 
