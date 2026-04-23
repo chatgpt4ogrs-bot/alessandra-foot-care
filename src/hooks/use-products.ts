@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { getAllProducts, type Product } from "@/lib/products";
-import { supabase } from "@/integrations/supabase/client";
 
 export function useProducts() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -18,11 +17,17 @@ export function useProducts() {
     load();
     const handler = () => load();
     window.addEventListener("products-updated", handler);
-    const { data: sub } = supabase.auth.onAuthStateChange(() => load());
+
+    const optimisticHandler = (e: Event) => {
+      const detail = (e as CustomEvent<Product[]>).detail;
+      if (detail && Array.isArray(detail)) setProducts(detail);
+    };
+    window.addEventListener("products-optimistic", optimisticHandler);
+
     return () => {
       cancelled = true;
       window.removeEventListener("products-updated", handler);
-      sub.subscription.unsubscribe();
+      window.removeEventListener("products-optimistic", optimisticHandler);
     };
   }, []);
 

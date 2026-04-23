@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { getAllPatients, getPatient, type Patient } from "@/lib/patients";
-import { supabase } from "@/integrations/supabase/client";
 
 export function usePatients() {
   const [patients, setPatients] = useState<Patient[]>([]);
@@ -18,11 +17,9 @@ export function usePatients() {
     load();
     const handler = () => load();
     window.addEventListener("patients-updated", handler);
-    const { data: sub } = supabase.auth.onAuthStateChange(() => load());
     return () => {
       cancelled = true;
       window.removeEventListener("patients-updated", handler);
-      sub.subscription.unsubscribe();
     };
   }, []);
 
