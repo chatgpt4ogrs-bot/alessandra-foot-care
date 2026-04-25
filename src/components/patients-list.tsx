@@ -5,20 +5,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePatients } from "@/hooks/use-patients";
+import { useDebounce } from "@/hooks/use-debounce";
 
 export function PatientsList() {
   const { patients, loaded } = usePatients();
   const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 250);
 
   const filtered = useMemo(() => {
-    if (!query.trim()) return patients;
-    const q = query.toLowerCase();
+    if (!debouncedQuery.trim()) return patients;
+    const q = debouncedQuery.toLowerCase();
     return patients.filter(
       (p) =>
         p.nome.toLowerCase().includes(q) ||
         p.telefone.toLowerCase().includes(q),
     );
-  }, [patients, query]);
+  }, [patients, debouncedQuery]);
 
   return (
     <div>
