@@ -1,5 +1,15 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { AlertTriangle, Minus, Package, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  AlertTriangle,
+  Minus,
+  Package,
+  Pencil,
+  Plus,
+  Trash2,
+  Wallet,
+  TrendingUp,
+  Boxes,
+} from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -89,17 +99,31 @@ const ProductRow = memo(function ProductRow({
           · Mínimo: {p.quantidadeMinima}
         </p>
         {(p.precoCusto > 0 || p.precoVenda > 0) && (
-          <p className="text-xs text-muted-foreground mt-1">
-            Custo por unidade:{" "}
-            <span className="tabular-nums">{formatBRL(p.precoCusto)}</span>{" "}
-            · Cobrado por uso:{" "}
-            <span className="tabular-nums text-foreground font-medium">
-              {formatBRL(p.precoVenda)}
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+              Custo un.{" "}
+              <span className="tabular-nums font-medium text-foreground">
+                {formatBRL(p.precoCusto)}
+              </span>
             </span>
-          </p>
+            <span className="inline-flex items-center gap-1 rounded-md bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+              Cobrado/uso{" "}
+              <span className="tabular-nums font-medium text-foreground">
+                {formatBRL(p.precoVenda)}
+              </span>
+            </span>
+            {p.precoCusto > 0 && (
+              <span className="inline-flex items-center gap-1 rounded-md bg-primary/10 px-2 py-0.5 text-xs text-primary">
+                Total em estoque{" "}
+                <span className="tabular-nums font-semibold">
+                  {formatBRL(p.precoCusto * p.quantidade)}
+                </span>
+              </span>
+            )}
+          </div>
         )}
         {p.observacao && (
-          <p className="text-xs text-muted-foreground mt-1">{p.observacao}</p>
+          <p className="text-xs text-muted-foreground mt-2">{p.observacao}</p>
         )}
       </div>
       <div className="flex items-center gap-1 rounded-md border border-input bg-background p-1">
