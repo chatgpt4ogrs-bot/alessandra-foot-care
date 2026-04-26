@@ -30,6 +30,7 @@ import {
   createProduct,
   deleteProduct,
   emptyProduct,
+  formatBRL,
   isLowStock,
   updateProduct,
   type Product,
@@ -87,6 +88,16 @@ const ProductRow = memo(function ProductRow({
           </span>{" "}
           · Mínimo: {p.quantidadeMinima}
         </p>
+        {(p.precoCusto > 0 || p.precoVenda > 0) && (
+          <p className="text-xs text-muted-foreground mt-1">
+            Custo:{" "}
+            <span className="tabular-nums">{formatBRL(p.precoCusto)}</span>{" "}
+            · Venda:{" "}
+            <span className="tabular-nums text-foreground font-medium">
+              {formatBRL(p.precoVenda)}
+            </span>
+          </p>
+        )}
         {p.observacao && (
           <p className="text-xs text-muted-foreground mt-1">{p.observacao}</p>
         )}
@@ -206,6 +217,8 @@ export function StockView() {
         quantidade: newQty,
         quantidadeMinima: p.quantidadeMinima,
         observacao: p.observacao,
+        precoCusto: p.precoCusto,
+        precoVenda: p.precoVenda,
       }).catch((err) => {
         console.error("[stock] update failed", err);
         toast.error("Falha ao salvar. Recarregando...");
@@ -233,6 +246,8 @@ export function StockView() {
       quantidade: p.quantidade,
       quantidadeMinima: p.quantidadeMinima,
       observacao: p.observacao,
+      precoCusto: p.precoCusto,
+      precoVenda: p.precoVenda,
     });
     setDialogOpen(true);
   }, []);
