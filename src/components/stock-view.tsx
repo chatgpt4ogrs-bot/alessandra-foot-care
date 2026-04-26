@@ -90,9 +90,9 @@ const ProductRow = memo(function ProductRow({
         </p>
         {(p.precoCusto > 0 || p.precoVenda > 0) && (
           <p className="text-xs text-muted-foreground mt-1">
-            Custo:{" "}
+            Custo por unidade:{" "}
             <span className="tabular-nums">{formatBRL(p.precoCusto)}</span>{" "}
-            · Venda:{" "}
+            · Cobrado por uso:{" "}
             <span className="tabular-nums text-foreground font-medium">
               {formatBRL(p.precoVenda)}
             </span>
@@ -364,7 +364,7 @@ export function StockView() {
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="precoVenda">Preço de venda (R$)</Label>
+                  <Label htmlFor="precoVenda">Valor cobrado por uso (R$)</Label>
                   <Input
                     id="precoVenda"
                     type="number"
@@ -380,7 +380,7 @@ export function StockView() {
                     }
                   />
                   <p className="text-xs text-muted-foreground">
-                    Valor cobrado ao usar no paciente
+                    Quanto você cobra cada vez que aplica no paciente
                   </p>
                 </div>
               </div>
