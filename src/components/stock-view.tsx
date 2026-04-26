@@ -342,6 +342,48 @@ export function StockView() {
                   />
                 </div>
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="precoCusto">Preço de custo (R$)</Label>
+                  <Input
+                    id="precoCusto"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="0,00"
+                    value={form.precoCusto || ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        precoCusto: Number(e.target.value) || 0,
+                      })
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Quanto você gastou por unidade
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="precoVenda">Preço de venda (R$)</Label>
+                  <Input
+                    id="precoVenda"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="0,00"
+                    value={form.precoVenda || ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        precoVenda: Number(e.target.value) || 0,
+                      })
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Valor cobrado ao usar no paciente
+                  </p>
+                </div>
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="obs">Observação (opcional)</Label>
                 <Textarea
