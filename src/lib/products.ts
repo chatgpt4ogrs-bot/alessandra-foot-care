@@ -8,6 +8,8 @@ export interface Product {
   quantidade: number;
   quantidadeMinima: number;
   observacao: string;
+  precoCusto: number;
+  precoVenda: number;
 }
 
 export type ProductInput = Omit<Product, "id" | "createdAt" | "updatedAt">;
@@ -27,6 +29,8 @@ function rowToProduct(r: any): Product {
     quantidade: r.quantidade ?? 0,
     quantidadeMinima: r.quantidade_minima ?? 0,
     observacao: r.observacao ?? "",
+    precoCusto: Number(r.preco_custo ?? 0),
+    precoVenda: Number(r.preco_venda ?? 0),
   };
 }
 
@@ -54,6 +58,8 @@ export async function createProduct(input: ProductInput): Promise<Product | null
       quantidade: input.quantidade,
       quantidade_minima: input.quantidadeMinima,
       observacao: input.observacao,
+      preco_custo: input.precoCusto,
+      preco_venda: input.precoVenda,
     })
     .select()
     .single();
@@ -76,6 +82,8 @@ export async function updateProduct(
       quantidade: input.quantidade,
       quantidade_minima: input.quantidadeMinima,
       observacao: input.observacao,
+      preco_custo: input.precoCusto,
+      preco_venda: input.precoVenda,
     })
     .eq("id", id)
     .select()
@@ -100,4 +108,13 @@ export const emptyProduct: ProductInput = {
   quantidade: 0,
   quantidadeMinima: 0,
   observacao: "",
+  precoCusto: 0,
+  precoVenda: 0,
 };
+
+export function formatBRL(value: number) {
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(value || 0);
+}
