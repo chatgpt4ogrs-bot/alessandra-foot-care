@@ -30,6 +30,7 @@ import {
   createProduct,
   deleteProduct,
   emptyProduct,
+  formatBRL,
   isLowStock,
   updateProduct,
   type Product,
@@ -87,6 +88,16 @@ const ProductRow = memo(function ProductRow({
           </span>{" "}
           · Mínimo: {p.quantidadeMinima}
         </p>
+        {(p.precoCusto > 0 || p.precoVenda > 0) && (
+          <p className="text-xs text-muted-foreground mt-1">
+            Custo:{" "}
+            <span className="tabular-nums">{formatBRL(p.precoCusto)}</span>{" "}
+            · Venda:{" "}
+            <span className="tabular-nums text-foreground font-medium">
+              {formatBRL(p.precoVenda)}
+            </span>
+          </p>
+        )}
         {p.observacao && (
           <p className="text-xs text-muted-foreground mt-1">{p.observacao}</p>
         )}
@@ -206,6 +217,8 @@ export function StockView() {
         quantidade: newQty,
         quantidadeMinima: p.quantidadeMinima,
         observacao: p.observacao,
+        precoCusto: p.precoCusto,
+        precoVenda: p.precoVenda,
       }).catch((err) => {
         console.error("[stock] update failed", err);
         toast.error("Falha ao salvar. Recarregando...");
@@ -233,6 +246,8 @@ export function StockView() {
       quantidade: p.quantidade,
       quantidadeMinima: p.quantidadeMinima,
       observacao: p.observacao,
+      precoCusto: p.precoCusto,
+      precoVenda: p.precoVenda,
     });
     setDialogOpen(true);
   }, []);
@@ -325,6 +340,48 @@ export function StockView() {
                       })
                     }
                   />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="precoCusto">Preço de custo (R$)</Label>
+                  <Input
+                    id="precoCusto"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="0,00"
+                    value={form.precoCusto || ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        precoCusto: Number(e.target.value) || 0,
+                      })
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Quanto você gastou por unidade
+                  </p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="precoVenda">Preço de venda (R$)</Label>
+                  <Input
+                    id="precoVenda"
+                    type="number"
+                    min={0}
+                    step="0.01"
+                    placeholder="0,00"
+                    value={form.precoVenda || ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        precoVenda: Number(e.target.value) || 0,
+                      })
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Valor cobrado ao usar no paciente
+                  </p>
                 </div>
               </div>
               <div className="space-y-2">

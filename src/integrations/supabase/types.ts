@@ -58,6 +58,8 @@ export type Database = {
           id: string
           nome: string
           observacao: string | null
+          preco_custo: number
+          preco_venda: number
           quantidade: number
           quantidade_minima: number
           updated_at: string
@@ -68,6 +70,8 @@ export type Database = {
           id?: string
           nome: string
           observacao?: string | null
+          preco_custo?: number
+          preco_venda?: number
           quantidade?: number
           quantidade_minima?: number
           updated_at?: string
@@ -78,6 +82,8 @@ export type Database = {
           id?: string
           nome?: string
           observacao?: string | null
+          preco_custo?: number
+          preco_venda?: number
           quantidade?: number
           quantidade_minima?: number
           updated_at?: string
