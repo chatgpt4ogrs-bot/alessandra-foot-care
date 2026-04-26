@@ -439,6 +439,48 @@ export function StockView() {
         </Dialog>
       </div>
 
+      {loaded && localProducts.length > 0 && (
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Card className="p-4 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+              <Boxes className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">Itens em estoque</p>
+              <p className="font-serif text-2xl tabular-nums text-foreground">
+                {totals.totalUnidades}
+              </p>
+            </div>
+          </Card>
+          <Card className="p-4 flex items-center gap-3 border-primary/20 bg-primary/5">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15 text-primary">
+              <Wallet className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">
+                Total investido em estoque
+              </p>
+              <p className="font-serif text-2xl tabular-nums text-foreground">
+                {formatBRL(totals.valorInvestido)}
+              </p>
+            </div>
+          </Card>
+          <Card className="p-4 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+              <TrendingUp className="h-5 w-5" />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">
+                Receita potencial (se usar tudo)
+              </p>
+              <p className="font-serif text-2xl tabular-nums text-foreground">
+                {formatBRL(totals.potencialReceita)}
+              </p>
+            </div>
+          </Card>
+        </div>
+      )}
+
       {loaded && localProducts.length === 0 ? (
         <Card className="p-10 text-center">
           <Package className="mx-auto h-10 w-10 text-muted-foreground" />
