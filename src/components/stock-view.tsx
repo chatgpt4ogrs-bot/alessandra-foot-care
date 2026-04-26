@@ -205,6 +205,18 @@ export function StockView() {
     });
   }, [localProducts]);
 
+  const totals = useMemo(() => {
+    let totalUnidades = 0;
+    let valorInvestido = 0;
+    let potencialReceita = 0;
+    for (const p of localProducts) {
+      totalUnidades += p.quantidade;
+      valorInvestido += p.precoCusto * p.quantidade;
+      potencialReceita += p.precoVenda * p.quantidade;
+    }
+    return { totalUnidades, valorInvestido, potencialReceita };
+  }, [localProducts]);
+
   // Alerta automático de estoque baixo (sem causar re-render)
   useEffect(() => {
     if (!loaded) return;
