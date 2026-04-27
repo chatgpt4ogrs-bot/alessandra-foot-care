@@ -5,11 +5,13 @@ import {
   Package,
   Pencil,
   Plus,
+  Search,
   Trash2,
   Wallet,
   TrendingUp,
   Boxes,
 } from "lucide-react";
+import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -188,6 +190,8 @@ export function StockView() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState<ProductInput>(emptyProduct);
   const [confirmDelete, setConfirmDelete] = useState<Product | null>(null);
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 250);
   const alertedRef = useRef<Set<string>>(new Set());
 
   // Estado local "espelho" para atualização otimista instantânea
@@ -197,13 +201,21 @@ export function StockView() {
   }, [products]);
 
   const sorted = useMemo(() => {
-    return [...localProducts].sort((a, b) => {
+    const q = debouncedQuery.trim().toLowerCase();
+    const base = q
+      ? localProducts.filter(
+          (p) =>
+            p.nome.toLowerCase().includes(q) ||
+            p.observacao.toLowerCase().includes(q),
+        )
+      : localProducts;
+    return [...base].sort((a, b) => {
       const aLow = isLowStock(a) ? 0 : 1;
       const bLow = isLowStock(b) ? 0 : 1;
       if (aLow !== bLow) return aLow - bLow;
       return a.quantidade - b.quantidade;
     });
-  }, [localProducts]);
+  }, [localProducts, debouncedQuery]);
 
   const totals = useMemo(() => {
     let totalUnidades = 0;
@@ -481,6 +493,18 @@ export function StockView() {
         </div>
       )}
 
+      {loaded && localProducts.length > 0 && (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar por nome do produto..."
+            className="pl-9 bg-card"
+          />
+        </div>
+      )}
+
       {loaded && localProducts.length === 0 ? (
         <Card className="p-10 text-center">
           <Package className="mx-auto h-10 w-10 text-muted-foreground" />
@@ -488,6 +512,10 @@ export function StockView() {
             Nenhum produto cadastrado ainda.
           </p>
         </Card>
+      ) : sorted.length === 0 ? (
+        <p className="text-center text-muted-foreground py-12">
+          Nenhum produto encontrado.
+        </p>
       ) : (
         <div className="space-y-3">
           {sorted.map((p) => (
