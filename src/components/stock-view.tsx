@@ -5,11 +5,13 @@ import {
   Package,
   Pencil,
   Plus,
+  Search,
   Trash2,
   Wallet,
   TrendingUp,
   Boxes,
 } from "lucide-react";
+import { useDebounce } from "@/hooks/use-debounce";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
