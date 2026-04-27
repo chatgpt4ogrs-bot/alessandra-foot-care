@@ -190,6 +190,8 @@ export function StockView() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [form, setForm] = useState<ProductInput>(emptyProduct);
   const [confirmDelete, setConfirmDelete] = useState<Product | null>(null);
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 250);
   const alertedRef = useRef<Set<string>>(new Set());
 
   // Estado local "espelho" para atualização otimista instantânea
