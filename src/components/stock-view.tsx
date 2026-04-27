@@ -201,13 +201,21 @@ export function StockView() {
   }, [products]);
 
   const sorted = useMemo(() => {
-    return [...localProducts].sort((a, b) => {
+    const q = debouncedQuery.trim().toLowerCase();
+    const base = q
+      ? localProducts.filter(
+          (p) =>
+            p.nome.toLowerCase().includes(q) ||
+            p.observacao.toLowerCase().includes(q),
+        )
+      : localProducts;
+    return [...base].sort((a, b) => {
       const aLow = isLowStock(a) ? 0 : 1;
       const bLow = isLowStock(b) ? 0 : 1;
       if (aLow !== bLow) return aLow - bLow;
       return a.quantidade - b.quantidade;
     });
-  }, [localProducts]);
+  }, [localProducts, debouncedQuery]);
 
   const totals = useMemo(() => {
     let totalUnidades = 0;
