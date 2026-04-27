@@ -9,20 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PacientesRouteImport } from './routes/pacientes'
 import { Route as NovoRouteImport } from './routes/novo'
+import { Route as EstoqueRouteImport } from './routes/estoque'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PacienteIdRouteImport } from './routes/paciente.$id'
 import { Route as PacienteIdEditarRouteImport } from './routes/paciente_.$id.editar'
 
+const PacientesRoute = PacientesRouteImport.update({
+  id: '/pacientes',
+  path: '/pacientes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NovoRoute = NovoRouteImport.update({
   id: '/novo',
   path: '/novo',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EstoqueRoute = EstoqueRouteImport.update({
+  id: '/estoque',
+  path: '/estoque',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgendaRoute = AgendaRouteImport.update({
+  id: '/agenda',
+  path: '/agenda',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -43,50 +61,88 @@ const PacienteIdEditarRoute = PacienteIdEditarRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
   '/auth': typeof AuthRoute
+  '/estoque': typeof EstoqueRoute
   '/novo': typeof NovoRoute
+  '/pacientes': typeof PacientesRoute
   '/paciente/$id': typeof PacienteIdRoute
   '/paciente/$id/editar': typeof PacienteIdEditarRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
   '/auth': typeof AuthRoute
+  '/estoque': typeof EstoqueRoute
   '/novo': typeof NovoRoute
+  '/pacientes': typeof PacientesRoute
   '/paciente/$id': typeof PacienteIdRoute
   '/paciente/$id/editar': typeof PacienteIdEditarRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/agenda': typeof AgendaRoute
   '/auth': typeof AuthRoute
+  '/estoque': typeof EstoqueRoute
   '/novo': typeof NovoRoute
+  '/pacientes': typeof PacientesRoute
   '/paciente/$id': typeof PacienteIdRoute
   '/paciente_/$id/editar': typeof PacienteIdEditarRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/novo' | '/paciente/$id' | '/paciente/$id/editar'
+  fullPaths:
+    | '/'
+    | '/agenda'
+    | '/auth'
+    | '/estoque'
+    | '/novo'
+    | '/pacientes'
+    | '/paciente/$id'
+    | '/paciente/$id/editar'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/novo' | '/paciente/$id' | '/paciente/$id/editar'
+  to:
+    | '/'
+    | '/agenda'
+    | '/auth'
+    | '/estoque'
+    | '/novo'
+    | '/pacientes'
+    | '/paciente/$id'
+    | '/paciente/$id/editar'
   id:
     | '__root__'
     | '/'
+    | '/agenda'
     | '/auth'
+    | '/estoque'
     | '/novo'
+    | '/pacientes'
     | '/paciente/$id'
     | '/paciente_/$id/editar'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AgendaRoute: typeof AgendaRoute
   AuthRoute: typeof AuthRoute
+  EstoqueRoute: typeof EstoqueRoute
   NovoRoute: typeof NovoRoute
+  PacientesRoute: typeof PacientesRoute
   PacienteIdRoute: typeof PacienteIdRoute
   PacienteIdEditarRoute: typeof PacienteIdEditarRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/pacientes': {
+      id: '/pacientes'
+      path: '/pacientes'
+      fullPath: '/pacientes'
+      preLoaderRoute: typeof PacientesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/novo': {
       id: '/novo'
       path: '/novo'
@@ -94,11 +150,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NovoRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/estoque': {
+      id: '/estoque'
+      path: '/estoque'
+      fullPath: '/estoque'
+      preLoaderRoute: typeof EstoqueRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agenda': {
+      id: '/agenda'
+      path: '/agenda'
+      fullPath: '/agenda'
+      preLoaderRoute: typeof AgendaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -127,8 +197,11 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AgendaRoute: AgendaRoute,
   AuthRoute: AuthRoute,
+  EstoqueRoute: EstoqueRoute,
   NovoRoute: NovoRoute,
+  PacientesRoute: PacientesRoute,
   PacienteIdRoute: PacienteIdRoute,
   PacienteIdEditarRoute: PacienteIdEditarRoute,
 }
