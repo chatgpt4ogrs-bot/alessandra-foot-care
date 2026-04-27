@@ -493,6 +493,18 @@ export function StockView() {
         </div>
       )}
 
+      {loaded && localProducts.length > 0 && (
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Buscar por nome do produto..."
+            className="pl-9 bg-card"
+          />
+        </div>
+      )}
+
       {loaded && localProducts.length === 0 ? (
         <Card className="p-10 text-center">
           <Package className="mx-auto h-10 w-10 text-muted-foreground" />
@@ -500,6 +512,10 @@ export function StockView() {
             Nenhum produto cadastrado ainda.
           </p>
         </Card>
+      ) : sorted.length === 0 ? (
+        <p className="text-center text-muted-foreground py-12">
+          Nenhum produto encontrado.
+        </p>
       ) : (
         <div className="space-y-3">
           {sorted.map((p) => (
