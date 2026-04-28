@@ -41,7 +41,15 @@ export interface Patient {
 
 export type PatientInput = Omit<Patient, "id" | "createdAt" | "updatedAt">;
 
+let patientsCache: Patient[] | null = null;
+let patientsInflight: Promise<Patient[]> | null = null;
+
+export function getCachedPatients(): Patient[] | null {
+  return patientsCache;
+}
+
 function notify() {
+  patientsCache = null;
   if (typeof window !== "undefined")
     window.dispatchEvent(new Event("patients-updated"));
 }
