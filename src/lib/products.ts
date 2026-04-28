@@ -14,6 +14,17 @@ export interface Product {
 
 export type ProductInput = Omit<Product, "id" | "createdAt" | "updatedAt">;
 
+let productsCache: Product[] | null = null;
+let productsInflight: Promise<Product[]> | null = null;
+
+export function getCachedProducts(): Product[] | null {
+  return productsCache;
+}
+
+function setProductsCache(next: Product[]) {
+  productsCache = next;
+}
+
 function notify() {
   if (typeof window !== "undefined")
     window.dispatchEvent(new Event("products-updated"));
@@ -35,15 +46,24 @@ function rowToProduct(r: any): Product {
 }
 
 export async function getAllProducts(): Promise<Product[]> {
-  const { data, error } = await supabase
-    .from("estoque")
-    .select("*")
-    .order("created_at", { ascending: false });
-  if (error) {
-    console.error(error);
-    return [];
-  }
-  return (data ?? []).map(rowToProduct);
+  if (productsInflight) return productsInflight;
+  productsInflight = (async () => {
+    const { data, error } = await supabase
+      .from("estoque")
+      .select(
+        "id,created_at,updated_at,nome,quantidade,quantidade_minima,observacao,preco_custo,preco_venda",
+      )
+      .order("created_at", { ascending: false });
+    productsInflight = null;
+    if (error) {
+      console.error(error);
+      return productsCache ?? [];
+    }
+    const list = (data ?? []).map(rowToProduct);
+    setProductsCache(list);
+    return list;
+  })();
+  return productsInflight;
 }
 
 export async function createProduct(input: ProductInput): Promise<Product | null> {
