@@ -127,15 +127,22 @@ function inputToRow(input: PatientInput) {
 }
 
 export async function getAllPatients(): Promise<Patient[]> {
-  const { data, error } = await supabase
-    .from("pacientes")
-    .select("*")
-    .order("created_at", { ascending: false });
-  if (error) {
-    console.error(error);
-    return [];
-  }
-  return (data ?? []).map(rowToPatient);
+  if (patientsInflight) return patientsInflight;
+  patientsInflight = (async () => {
+    const { data, error } = await supabase
+      .from("pacientes")
+      .select("*")
+      .order("created_at", { ascending: false });
+    patientsInflight = null;
+    if (error) {
+      console.error(error);
+      return patientsCache ?? [];
+    }
+    const list = (data ?? []).map(rowToPatient);
+    patientsCache = list;
+    return list;
+  })();
+  return patientsInflight;
 }
 
 export async function getPatient(id: string): Promise<Patient | null> {
