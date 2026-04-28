@@ -26,6 +26,7 @@ function setProductsCache(next: Product[]) {
 }
 
 function notify() {
+  productsCache = null;
   if (typeof window !== "undefined")
     window.dispatchEvent(new Event("products-updated"));
 }
