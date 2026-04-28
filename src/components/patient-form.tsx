@@ -195,7 +195,7 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => navigate({ to: "/" })}
+          onClick={() => navigate({ to: "/pacientes" })}
         >
           <ArrowLeft className="h-4 w-4 mr-1" />
           Voltar

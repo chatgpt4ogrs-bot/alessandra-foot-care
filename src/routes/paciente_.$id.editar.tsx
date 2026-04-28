@@ -29,7 +29,7 @@ function EditarPaciente() {
         <div className="px-8 py-10 text-center">
           <p className="text-muted-foreground mb-4">Paciente não encontrada.</p>
           <Button asChild>
-            <Link to="/">Voltar</Link>
+            <Link to="/pacientes">Voltar</Link>
           </Button>
         </div>
       </AppLayout>

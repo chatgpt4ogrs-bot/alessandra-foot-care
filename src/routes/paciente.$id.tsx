@@ -101,7 +101,7 @@ function VerPaciente() {
           <div className="px-8 py-10 text-center">
             <p className="text-muted-foreground mb-4">Paciente não encontrada.</p>
             <Button asChild>
-              <Link to="/">Voltar</Link>
+              <Link to="/pacientes">Voltar</Link>
             </Button>
           </div>
         </AppLayout>
@@ -117,7 +117,7 @@ function VerPaciente() {
         <div className="w-full mx-auto px-8 py-8 max-w-3xl space-y-6">
           <div className="flex items-center justify-between gap-3">
             <Button asChild variant="ghost" size="sm">
-              <Link to="/">
+              <Link to="/pacientes">
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 Voltar
               </Link>
