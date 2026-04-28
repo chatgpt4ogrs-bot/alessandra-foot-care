@@ -11,7 +11,15 @@ export interface Appointment {
 
 export type AppointmentInput = Omit<Appointment, "id" | "createdAt">;
 
+let appointmentsCache: Appointment[] | null = null;
+let appointmentsInflight: Promise<Appointment[]> | null = null;
+
+export function getCachedAppointments(): Appointment[] | null {
+  return appointmentsCache;
+}
+
 function notify() {
+  appointmentsCache = null;
   if (typeof window !== "undefined")
     window.dispatchEvent(new Event("appointments-updated"));
 }
@@ -29,15 +37,22 @@ function rowToAppointment(r: any): Appointment {
 }
 
 export async function getAllAppointments(): Promise<Appointment[]> {
-  const { data, error } = await supabase
-    .from("agendamentos")
-    .select("*")
-    .order("data", { ascending: true });
-  if (error) {
-    console.error(error);
-    return [];
-  }
-  return (data ?? []).map(rowToAppointment);
+  if (appointmentsInflight) return appointmentsInflight;
+  appointmentsInflight = (async () => {
+    const { data, error } = await supabase
+      .from("agendamentos")
+      .select("id,paciente_id,data,horario,observacoes,created_at")
+      .order("data", { ascending: true });
+    appointmentsInflight = null;
+    if (error) {
+      console.error(error);
+      return appointmentsCache ?? [];
+    }
+    const list = (data ?? []).map(rowToAppointment);
+    appointmentsCache = list;
+    return list;
+  })();
+  return appointmentsInflight;
 }
 
 export async function createAppointment(
