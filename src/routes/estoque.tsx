@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/site-header";
-import { SectionNav } from "@/components/section-nav";
+import { AppLayout } from "@/components/app-layout";
 import { StockView } from "@/components/stock-view";
 import { RequireAuth } from "@/components/require-auth";
 
@@ -20,13 +19,11 @@ export const Route = createFileRoute("/estoque")({
 function EstoquePage() {
   return (
     <RequireAuth>
-      <div className="min-h-screen bg-background">
-        <SiteHeader />
-        <SectionNav />
-        <main className="mx-auto max-w-5xl px-4 py-10 animate-in fade-in duration-300">
+      <AppLayout>
+        <div className="px-8 py-8">
           <StockView />
-        </main>
-      </div>
+        </div>
+      </AppLayout>
     </RequireAuth>
   );
 }

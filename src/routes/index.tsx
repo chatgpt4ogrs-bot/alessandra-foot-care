@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/site-header";
-import { AppSidebar } from "@/components/app-sidebar";
+import { AppLayout } from "@/components/app-layout";
 import { DashboardView } from "@/components/dashboard-view";
 import { RequireAuth } from "@/components/require-auth";
 
@@ -21,17 +20,11 @@ export const Route = createFileRoute("/")({
 function HomePage() {
   return (
     <RequireAuth>
-      <div className="min-h-screen bg-background">
-        <SiteHeader />
-        <main className="mx-auto max-w-6xl px-4 py-8">
-          <div className="flex flex-col md:flex-row gap-6 animate-in fade-in duration-300">
-            <AppSidebar />
-            <div className="flex-1 min-w-0">
-              <DashboardView />
-            </div>
-          </div>
-        </main>
-      </div>
+      <AppLayout>
+        <div className="px-8 py-8">
+          <DashboardView />
+        </div>
+      </AppLayout>
     </RequireAuth>
   );
 }

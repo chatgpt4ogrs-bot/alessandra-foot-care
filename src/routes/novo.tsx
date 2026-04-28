@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { SiteHeader } from "@/components/site-header";
+import { AppLayout } from "@/components/app-layout";
 import { PatientForm } from "@/components/patient-form";
 import { RequireAuth } from "@/components/require-auth";
 
@@ -16,15 +16,14 @@ export const Route = createFileRoute("/novo")({
 function NovoPaciente() {
   return (
     <RequireAuth>
-      <div className="min-h-screen bg-background">
-        <SiteHeader />
-        <main className="mx-auto max-w-3xl px-4 py-10">
+      <AppLayout>
+        <div className="w-full max-w-3xl mx-auto px-8 py-8">
           <h2 className="font-serif text-3xl text-foreground mb-6">
             Nova Paciente
           </h2>
           <PatientForm mode="create" />
-        </main>
-      </div>
+        </div>
+      </AppLayout>
     </RequireAuth>
   );
 }
