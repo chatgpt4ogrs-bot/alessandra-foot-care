@@ -172,7 +172,7 @@ export async function createPatient(input: PatientInput): Promise<Patient> {
     .single();
   if (error) {
     console.error("[createPatient] insert error:", error);
-    throw new Error(error.message || "Erro ao salvar no banco de dados.");
+    throw new Error("Erro ao salvar o paciente. Tente novamente.");
   }
   if (!data) {
     throw new Error("Resposta vazia do banco de dados.");
@@ -193,7 +193,7 @@ export async function updatePatient(
     .single();
   if (error) {
     console.error("[updatePatient] error:", error);
-    throw new Error(error.message || "Erro ao atualizar paciente.");
+    throw new Error("Erro ao atualizar o paciente. Tente novamente.");
   }
   if (!data) throw new Error("Paciente não encontrado.");
   notify();
@@ -204,7 +204,7 @@ export async function deletePatient(id: string): Promise<void> {
   const { error } = await supabase.from("pacientes").delete().eq("id", id);
   if (error) {
     console.error("[deletePatient] error:", error);
-    throw new Error(error.message);
+    throw new Error("Erro ao excluir o paciente. Tente novamente.");
   }
   notify();
 }

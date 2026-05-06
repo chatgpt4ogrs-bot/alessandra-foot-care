@@ -95,7 +95,9 @@ function AuthPage() {
         }
       }
     } catch (err) {
-      console.error("[auth] unexpected error:", err);
+      if (import.meta.env.DEV) {
+        console.error("[auth] unexpected error:", err);
+      }
       setErrorMsg("Ocorreu um erro inesperado. Tente novamente.");
     } finally {
       setSubmitting(false);

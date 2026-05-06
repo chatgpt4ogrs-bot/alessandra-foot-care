@@ -156,6 +156,10 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
       toast.error("Informe o nome do paciente.");
       return;
     }
+    if (data.cpf && !/^\d{3}\.\d{3}\.\d{3}-\d{2}$/.test(data.cpf)) {
+      toast.error("CPF inválido. Use o formato 000.000.000-00.");
+      return;
+    }
     if (
       data.cirurgiaMembrosInferiores === "sim" &&
       !data.cirurgiaMembrosInferioresQual.trim()
@@ -398,8 +402,16 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
             <Input
               id="cpf"
               value={data.cpf}
-              onChange={(e) => set("cpf", e.target.value)}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/\D/g, "").substring(0, 11);
+                const formatted = raw
+                  .replace(/(\d{3})(\d)/, "$1.$2")
+                  .replace(/(\d{3})(\d)/, "$1.$2")
+                  .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                set("cpf", formatted);
+              }}
               placeholder="000.000.000-00"
+              maxLength={14}
             />
           </div>
           <div className="space-y-2">

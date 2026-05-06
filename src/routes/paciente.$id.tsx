@@ -297,7 +297,14 @@ function VerPaciente() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-5 md:grid-cols-2">
-              <Field label="CPF" value={patient.cpf} />
+              <Field
+                label="CPF"
+                value={
+                  patient.cpf
+                    ? patient.cpf.replace(/^(\d{3})\.(\d{3})\.(\d{3})-(\d{2})$/, "***.$2.$3-**")
+                    : ""
+                }
+              />
               <Field
                 label="Data de nascimento"
                 value={
