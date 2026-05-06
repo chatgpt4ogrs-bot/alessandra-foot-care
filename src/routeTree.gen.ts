@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as PacientesRouteImport } from './routes/pacientes'
 import { Route as NovoRouteImport } from './routes/novo'
 import { Route as EstoqueRouteImport } from './routes/estoque'
@@ -18,6 +19,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PacienteIdRouteImport } from './routes/paciente.$id'
 import { Route as PacienteIdEditarRouteImport } from './routes/paciente_.$id.editar'
 
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PacientesRoute = PacientesRouteImport.update({
   id: '/pacientes',
   path: '/pacientes',
@@ -66,6 +72,7 @@ export interface FileRoutesByFullPath {
   '/estoque': typeof EstoqueRoute
   '/novo': typeof NovoRoute
   '/pacientes': typeof PacientesRoute
+  '/register': typeof RegisterRoute
   '/paciente/$id': typeof PacienteIdRoute
   '/paciente/$id/editar': typeof PacienteIdEditarRoute
 }
@@ -76,6 +83,7 @@ export interface FileRoutesByTo {
   '/estoque': typeof EstoqueRoute
   '/novo': typeof NovoRoute
   '/pacientes': typeof PacientesRoute
+  '/register': typeof RegisterRoute
   '/paciente/$id': typeof PacienteIdRoute
   '/paciente/$id/editar': typeof PacienteIdEditarRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesById {
   '/estoque': typeof EstoqueRoute
   '/novo': typeof NovoRoute
   '/pacientes': typeof PacientesRoute
+  '/register': typeof RegisterRoute
   '/paciente/$id': typeof PacienteIdRoute
   '/paciente_/$id/editar': typeof PacienteIdEditarRoute
 }
@@ -99,6 +108,7 @@ export interface FileRouteTypes {
     | '/estoque'
     | '/novo'
     | '/pacientes'
+    | '/register'
     | '/paciente/$id'
     | '/paciente/$id/editar'
   fileRoutesByTo: FileRoutesByTo
@@ -109,6 +119,7 @@ export interface FileRouteTypes {
     | '/estoque'
     | '/novo'
     | '/pacientes'
+    | '/register'
     | '/paciente/$id'
     | '/paciente/$id/editar'
   id:
@@ -119,6 +130,7 @@ export interface FileRouteTypes {
     | '/estoque'
     | '/novo'
     | '/pacientes'
+    | '/register'
     | '/paciente/$id'
     | '/paciente_/$id/editar'
   fileRoutesById: FileRoutesById
@@ -130,12 +142,20 @@ export interface RootRouteChildren {
   EstoqueRoute: typeof EstoqueRoute
   NovoRoute: typeof NovoRoute
   PacientesRoute: typeof PacientesRoute
+  RegisterRoute: typeof RegisterRoute
   PacienteIdRoute: typeof PacienteIdRoute
   PacienteIdEditarRoute: typeof PacienteIdEditarRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/pacientes': {
       id: '/pacientes'
       path: '/pacientes'
@@ -202,6 +222,7 @@ const rootRouteChildren: RootRouteChildren = {
   EstoqueRoute: EstoqueRoute,
   NovoRoute: NovoRoute,
   PacientesRoute: PacientesRoute,
+  RegisterRoute: RegisterRoute,
   PacienteIdRoute: PacienteIdRoute,
   PacienteIdEditarRoute: PacienteIdEditarRoute,
 }
