@@ -17,11 +17,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { createPatient, emptyPatient } from "@/lib/patients";
 import { createAppointment } from "@/lib/appointments";
 
@@ -101,9 +97,7 @@ export function QuickPatientDialog({
             <UserPlus className="h-5 w-5 text-primary" />
             Novo paciente + Agendamento
           </DialogTitle>
-          <DialogDescription>
-            Cadastro rápido com agendamento vinculado.
-          </DialogDescription>
+          <DialogDescription>Cadastro rápido com agendamento vinculado.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="grid gap-4">
@@ -177,11 +171,7 @@ export function QuickPatientDialog({
           </div>
 
           <div className="flex justify-end gap-2 pt-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancelar
             </Button>
             <Button type="submit">

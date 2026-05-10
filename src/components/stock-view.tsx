@@ -58,12 +58,7 @@ interface RowProps {
   onDelete: (p: Product) => void;
 }
 
-const ProductRow = memo(function ProductRow({
-  product: p,
-  onAdjust,
-  onEdit,
-  onDelete,
-}: RowProps) {
+const ProductRow = memo(function ProductRow({ product: p, onAdjust, onEdit, onDelete }: RowProps) {
   const [stepValue, setStepValue] = useState("");
   const low = isLowStock(p);
 
@@ -92,9 +87,7 @@ const ProductRow = memo(function ProductRow({
         <p className="text-sm text-muted-foreground mt-1">
           Quantidade:{" "}
           <span
-            className={`font-medium tabular-nums ${
-              low ? "text-destructive" : "text-foreground"
-            }`}
+            className={`font-medium tabular-nums ${low ? "text-destructive" : "text-foreground"}`}
           >
             {p.quantidade}
           </span>{" "}
@@ -124,20 +117,18 @@ const ProductRow = memo(function ProductRow({
             )}
           </div>
         )}
-        {p.observacao && (
-          <p className="text-xs text-muted-foreground mt-2">{p.observacao}</p>
-        )}
+        {p.observacao && <p className="text-xs text-muted-foreground mt-2">{p.observacao}</p>}
       </div>
       <div className="flex items-center gap-1 rounded-md border border-input bg-background p-1">
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="h-7 w-7"
+          className="h-9 w-9"
           onClick={() => onAdjust(p, -1, step)}
           aria-label="Retirar do estoque"
         >
-          <Minus className="h-3.5 w-3.5" />
+          <Minus className="h-4 w-4" />
         </Button>
         <Input
           type="number"
@@ -145,36 +136,36 @@ const ProductRow = memo(function ProductRow({
           value={stepValue}
           onChange={(e) => setStepValue(e.target.value)}
           placeholder="1"
-          className="h-7 w-14 text-center text-sm border-0 shadow-none focus-visible:ring-0 px-1"
+          className="h-9 w-16 text-center text-base border-0 shadow-none focus-visible:ring-0 px-1"
         />
         <Button
           type="button"
           variant="ghost"
           size="icon"
-          className="h-7 w-7"
+          className="h-9 w-9"
           onClick={() => onAdjust(p, 1, step)}
           aria-label="Adicionar ao estoque"
         >
-          <Plus className="h-3.5 w-3.5" />
+          <Plus className="h-4 w-4" />
         </Button>
       </div>
-      <div className="flex gap-2">
+      <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto mt-2 sm:mt-0">
         <Button
           variant="outline"
           size="sm"
           onClick={() => onEdit(p)}
-          className="gap-1"
+          className="gap-1 flex-1 sm:flex-none h-10"
         >
-          <Pencil className="h-3.5 w-3.5" />
+          <Pencil className="h-4 w-4" />
           Editar
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => onDelete(p)}
-          className="gap-1 text-destructive hover:text-destructive"
+          className="gap-1 text-destructive hover:text-destructive flex-1 sm:flex-none h-10"
         >
-          <Trash2 className="h-3.5 w-3.5" />
+          <Trash2 className="h-4 w-4" />
           Excluir
         </Button>
       </div>
@@ -204,9 +195,7 @@ export function StockView() {
     const q = debouncedQuery.trim().toLowerCase();
     const base = q
       ? localProducts.filter(
-          (p) =>
-            p.nome.toLowerCase().includes(q) ||
-            p.observacao.toLowerCase().includes(q),
+          (p) => p.nome.toLowerCase().includes(q) || p.observacao.toLowerCase().includes(q),
         )
       : localProducts;
     return [...base].sort((a, b) => {
@@ -247,39 +236,34 @@ export function StockView() {
     });
   }, [localProducts, loaded]);
 
-  const handleAdjust = useCallback(
-    (p: Product, delta: number, step: number) => {
-      const change = delta > 0 ? step : -step;
-      const newQty = p.quantidade + change;
-      if (newQty < 0) {
-        toast.error("Quantidade insuficiente em estoque");
-        return;
-      }
-      // Atualização otimista — UI responde imediatamente
+  const handleAdjust = useCallback((p: Product, delta: number, step: number) => {
+    const change = delta > 0 ? step : -step;
+    const newQty = p.quantidade + change;
+    if (newQty < 0) {
+      toast.error("Quantidade insuficiente em estoque");
+      return;
+    }
+    // Atualização otimista — UI responde imediatamente
+    setLocalProducts((prev) =>
+      prev.map((it) => (it.id === p.id ? { ...it, quantidade: newQty } : it)),
+    );
+    // Persiste em background
+    updateProduct(p.id, {
+      nome: p.nome,
+      quantidade: newQty,
+      quantidadeMinima: p.quantidadeMinima,
+      observacao: p.observacao,
+      precoCusto: p.precoCusto,
+      precoVenda: p.precoVenda,
+    }).catch((err) => {
+      console.error("[stock] update failed", err);
+      toast.error("Falha ao salvar. Recarregando...");
+      // Reverte em caso de erro
       setLocalProducts((prev) =>
-        prev.map((it) => (it.id === p.id ? { ...it, quantidade: newQty } : it)),
+        prev.map((it) => (it.id === p.id ? { ...it, quantidade: p.quantidade } : it)),
       );
-      // Persiste em background
-      updateProduct(p.id, {
-        nome: p.nome,
-        quantidade: newQty,
-        quantidadeMinima: p.quantidadeMinima,
-        observacao: p.observacao,
-        precoCusto: p.precoCusto,
-        precoVenda: p.precoVenda,
-      }).catch((err) => {
-        console.error("[stock] update failed", err);
-        toast.error("Falha ao salvar. Recarregando...");
-        // Reverte em caso de erro
-        setLocalProducts((prev) =>
-          prev.map((it) =>
-            it.id === p.id ? { ...it, quantidade: p.quantidade } : it,
-          ),
-        );
-      });
-    },
-    [],
-  );
+    });
+  }, []);
 
   const openNew = useCallback(() => {
     setEditing(null);
@@ -347,9 +331,7 @@ export function StockView() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
-                {editing ? "Editar produto" : "Cadastrar produto"}
-              </DialogTitle>
+              <DialogTitle>{editing ? "Editar produto" : "Cadastrar produto"}</DialogTitle>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
@@ -369,9 +351,7 @@ export function StockView() {
                     type="number"
                     min={0}
                     value={form.quantidade}
-                    onChange={(e) =>
-                      setForm({ ...form, quantidade: Number(e.target.value) || 0 })
-                    }
+                    onChange={(e) => setForm({ ...form, quantidade: Number(e.target.value) || 0 })}
                   />
                 </div>
                 <div className="space-y-2">
@@ -407,9 +387,7 @@ export function StockView() {
                       })
                     }
                   />
-                  <p className="text-xs text-muted-foreground">
-                    Quanto você gastou por unidade
-                  </p>
+                  <p className="text-xs text-muted-foreground">Quanto você gastou por unidade</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="precoVenda">Valor cobrado por uso (R$)</Label>
@@ -437,9 +415,7 @@ export function StockView() {
                 <Textarea
                   id="obs"
                   value={form.observacao}
-                  onChange={(e) =>
-                    setForm({ ...form, observacao: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, observacao: e.target.value })}
                   rows={3}
                 />
               </div>
@@ -469,9 +445,7 @@ export function StockView() {
               <Wallet className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">
-                Total investido em estoque
-              </p>
+              <p className="text-xs text-muted-foreground">Total investido em estoque</p>
               <p className="font-serif text-2xl tabular-nums text-foreground">
                 {formatBRL(totals.valorInvestido)}
               </p>
@@ -482,9 +456,7 @@ export function StockView() {
               <TrendingUp className="h-5 w-5" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs text-muted-foreground">
-                Receita potencial (se usar tudo)
-              </p>
+              <p className="text-xs text-muted-foreground">Receita potencial (se usar tudo)</p>
               <p className="font-serif text-2xl tabular-nums text-foreground">
                 {formatBRL(totals.potencialReceita)}
               </p>
@@ -508,14 +480,10 @@ export function StockView() {
       {loaded && localProducts.length === 0 ? (
         <Card className="p-10 text-center">
           <Package className="mx-auto h-10 w-10 text-muted-foreground" />
-          <p className="mt-3 text-sm text-muted-foreground">
-            Nenhum produto cadastrado ainda.
-          </p>
+          <p className="mt-3 text-sm text-muted-foreground">Nenhum produto cadastrado ainda.</p>
         </Card>
       ) : sorted.length === 0 ? (
-        <p className="text-center text-muted-foreground py-12">
-          Nenhum produto encontrado.
-        </p>
+        <p className="text-center text-muted-foreground py-12">Nenhum produto encontrado.</p>
       ) : (
         <div className="space-y-3">
           {sorted.map((p) => (
@@ -530,16 +498,13 @@ export function StockView() {
         </div>
       )}
 
-      <AlertDialog
-        open={!!confirmDelete}
-        onOpenChange={(o) => !o && setConfirmDelete(null)}
-      >
+      <AlertDialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Excluir produto?</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta ação não pode ser desfeita. O produto{" "}
-              <strong>{confirmDelete?.nome}</strong> será removido do estoque.
+              Esta ação não pode ser desfeita. O produto <strong>{confirmDelete?.nome}</strong> será
+              removido do estoque.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

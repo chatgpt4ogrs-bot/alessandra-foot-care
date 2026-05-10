@@ -16,9 +16,7 @@ export function PatientsList() {
     if (!debouncedQuery.trim()) return patients;
     const q = debouncedQuery.toLowerCase();
     return patients.filter(
-      (p) =>
-        p.nome.toLowerCase().includes(q) ||
-        p.telefone.toLowerCase().includes(q),
+      (p) => p.nome.toLowerCase().includes(q) || p.telefone.toLowerCase().includes(q),
     );
   }, [patients, debouncedQuery]);
 
@@ -74,18 +72,14 @@ export function PatientsList() {
           </CardContent>
         </Card>
       ) : filtered.length === 0 ? (
-        <p className="text-center text-muted-foreground py-12">
-          Nenhuma paciente encontrada.
-        </p>
+        <p className="text-center text-muted-foreground py-12">Nenhuma paciente encontrada.</p>
       ) : (
         <div className="grid gap-3">
           {filtered.map((p) => (
             <Card key={p.id} className="hover:shadow-sm transition-shadow">
               <CardContent className="py-4 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-medium text-foreground truncate">
-                    {p.nome}
-                  </h3>
+                  <h3 className="font-medium text-foreground truncate">{p.nome}</h3>
                   {p.telefone && (
                     <p className="text-sm text-muted-foreground flex items-center gap-1.5 mt-0.5">
                       <Phone className="h-3.5 w-3.5" />

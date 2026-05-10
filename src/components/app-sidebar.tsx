@@ -12,7 +12,7 @@ const items = [
   { to: "/estoque" as const, label: "Estoque", icon: Package },
 ];
 
-export function AppSidebar() {
+export function SidebarContent({ onClickItem }: { onClickItem?: () => void }) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -23,15 +23,11 @@ export function AppSidebar() {
   }
 
   return (
-    <aside className="fixed inset-y-0 left-0 z-40 flex w-60 flex-col bg-white border-r border-border/40 shadow-sm">
+    <>
       {/* Logo */}
       <div className="flex items-center px-4 py-5 border-b border-border/30">
-        <Link to="/" className="block">
-          <img
-            src={logo}
-            alt="Alessandra Podóloga"
-            className="h-12 w-auto object-contain"
-          />
+        <Link to="/" onClick={onClickItem} className="block">
+          <img src={logo} alt="Alessandra Podóloga" className="h-12 w-auto object-contain" />
         </Link>
       </div>
 
@@ -47,6 +43,7 @@ export function AppSidebar() {
               <li key={item.to}>
                 <Link
                   to={item.to}
+                  onClick={onClickItem}
                   activeOptions={{ exact: true }}
                   className={cn(
                     "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-accent/10 hover:text-foreground",
@@ -80,6 +77,14 @@ export function AppSidebar() {
           </button>
         </div>
       )}
+    </>
+  );
+}
+
+export function AppSidebar() {
+  return (
+    <aside className="hidden lg:flex fixed inset-y-0 left-0 z-40 w-64 flex-col bg-white border-r border-border/40 shadow-sm overflow-y-auto">
+      <SidebarContent />
     </aside>
   );
 }

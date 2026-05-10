@@ -1,5 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 
+export const AppointmentInputSchema = z.object({
+  patientId: z.string().uuid("ID de paciente inválido"),
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Data inválida"),
+  time: z.string().regex(/^\d{2}:\d{2}$/, "Horário inválido"),
+  notes: z.string().trim().max(2000).optional().default(""),
+});
 export interface Appointment {
   id: string;
   patientId: string;
@@ -20,8 +27,7 @@ export function getCachedAppointments(): Appointment[] | null {
 
 function notify() {
   appointmentsCache = null;
-  if (typeof window !== "undefined")
-    window.dispatchEvent(new Event("appointments-updated"));
+  if (typeof window !== "undefined") window.dispatchEvent(new Event("appointments-updated"));
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -55,20 +61,21 @@ export async function getAllAppointments(): Promise<Appointment[]> {
   return appointmentsInflight;
 }
 
-export async function createAppointment(
-  input: AppointmentInput,
-): Promise<Appointment | null> {
+export async function createAppointment(input: AppointmentInput): Promise<Appointment | null> {
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
   if (!userId) return null;
+
+  const validData = AppointmentInputSchema.parse(input);
+
   const { data, error } = await supabase
     .from("agendamentos")
     .insert({
       user_id: userId,
-      paciente_id: input.patientId,
-      data: input.date,
-      horario: input.time,
-      observacoes: input.notes,
+      paciente_id: validData.patientId,
+      data: validData.date,
+      horario: validData.time,
+      observacoes: validData.notes,
     })
     .select()
     .single();
@@ -90,13 +97,15 @@ export async function updateAppointment(
   id: string,
   input: AppointmentInput,
 ): Promise<Appointment | null> {
+  const validData = AppointmentInputSchema.parse(input);
+
   const { data, error } = await supabase
     .from("agendamentos")
     .update({
-      paciente_id: input.patientId,
-      data: input.date,
-      horario: input.time,
-      observacoes: input.notes,
+      paciente_id: validData.patientId,
+      data: validData.date,
+      horario: validData.time,
+      observacoes: validData.notes,
     })
     .eq("id", id)
     .select()

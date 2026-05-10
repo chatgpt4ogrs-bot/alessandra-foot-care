@@ -1,5 +1,41 @@
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 
+const yesNoSchema = z.enum(["sim", "nao", ""]).catch("");
+const tipoCalcadoSchema = z.enum(["aberto", "fechado", "salto", "sapato_baixo", ""]).catch("");
+const tipoMeiaSchema = z.enum(["algodao", "nylon", ""]).catch("");
+
+export const PatientInputSchema = z.object({
+  nome: z.string().trim().min(1, "Nome é obrigatório").max(255),
+  cpf: z.string().trim().max(20).optional().default(""),
+  dataNascimento: z.string().trim().max(20).optional().default(""),
+  telefone: z.string().trim().max(30).optional().default(""),
+  email: z.string().trim().max(255).optional().default(""),
+  endereco: z.string().trim().max(500).optional().default(""),
+  diabetes: yesNoSchema,
+  hipertensao: yesNoSchema,
+  medicamentos: z.string().trim().max(1000).optional().default(""),
+  alergias: z.string().trim().max(1000).optional().default(""),
+  problemasPes: z.string().trim().max(1000).optional().default(""),
+  gestante: yesNoSchema,
+  observacoesClinicas: z.string().trim().max(2000).optional().default(""),
+  tipoCalcado: tipoCalcadoSchema,
+  tipoMeia: tipoMeiaSchema,
+  cirurgiaMembrosInferiores: yesNoSchema,
+  cirurgiaMembrosInferioresQual: z.string().trim().max(500).optional().default(""),
+  praticaEsporte: yesNoSchema,
+  praticaEsporteQual: z.string().trim().max(500).optional().default(""),
+  tomaMedicamento: yesNoSchema,
+  tomaMedicamentoQual: z.string().trim().max(500).optional().default(""),
+  marcaPassosPinos: yesNoSchema,
+  problemasCancerigenos: yesNoSchema,
+  pressaoAlta: yesNoSchema,
+  diabetesCondicao: yesNoSchema,
+  convulsoes: yesNoSchema,
+  problemasCirculatorios: yesNoSchema,
+  alergia: yesNoSchema,
+  observacoesFinais: z.string().trim().max(2000).optional().default(""),
+});
 export type YesNo = "sim" | "nao" | "";
 export type TipoCalcado = "aberto" | "fechado" | "salto" | "sapato_baixo" | "";
 export type TipoMeia = "algodao" | "nylon" | "";
@@ -50,8 +86,7 @@ export function getCachedPatients(): Patient[] | null {
 
 function notify() {
   patientsCache = null;
-  if (typeof window !== "undefined")
-    window.dispatchEvent(new Event("patients-updated"));
+  if (typeof window !== "undefined") window.dispatchEvent(new Event("patients-updated"));
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -146,16 +181,14 @@ export async function getAllPatients(): Promise<Patient[]> {
 }
 
 export async function getPatient(id: string): Promise<Patient | null> {
-  const { data, error } = await supabase
-    .from("pacientes")
-    .select("*")
-    .eq("id", id)
-    .maybeSingle();
+  const { data, error } = await supabase.from("pacientes").select("*").eq("id", id).maybeSingle();
   if (error || !data) return null;
   return rowToPatient(data);
 }
 
 export async function createPatient(input: PatientInput): Promise<Patient> {
+  const validData = PatientInputSchema.parse(input);
+
   const { data: userData, error: userErr } = await supabase.auth.getUser();
   if (userErr) {
     console.error("[createPatient] getUser error:", userErr);
@@ -167,7 +200,7 @@ export async function createPatient(input: PatientInput): Promise<Patient> {
   }
   const { data, error } = await supabase
     .from("pacientes")
-    .insert({ ...inputToRow(input), user_id: userId })
+    .insert({ ...inputToRow(validData), user_id: userId })
     .select()
     .single();
   if (error) {
@@ -181,13 +214,12 @@ export async function createPatient(input: PatientInput): Promise<Patient> {
   return rowToPatient(data);
 }
 
-export async function updatePatient(
-  id: string,
-  input: PatientInput,
-): Promise<Patient> {
+export async function updatePatient(id: string, input: PatientInput): Promise<Patient> {
+  const validData = PatientInputSchema.parse(input);
+
   const { data, error } = await supabase
     .from("pacientes")
-    .update(inputToRow(input))
+    .update(inputToRow(validData))
     .eq("id", id)
     .select()
     .single();

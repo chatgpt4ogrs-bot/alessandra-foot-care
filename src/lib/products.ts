@@ -1,5 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
+import { z } from "zod";
 
+export const ProductInputSchema = z.object({
+  nome: z.string().trim().min(1, "O nome do produto é obrigatório").max(255),
+  quantidade: z.number().int().min(0, "A quantidade deve ser maior ou igual a 0"),
+  quantidadeMinima: z.number().int().min(0),
+  observacao: z.string().trim().max(1000).optional().default(""),
+  precoCusto: z.number().min(0),
+  precoVenda: z.number().min(0),
+});
 export interface Product {
   id: string;
   createdAt: string;
@@ -27,8 +36,7 @@ function setProductsCache(next: Product[]) {
 
 function notify() {
   productsCache = null;
-  if (typeof window !== "undefined")
-    window.dispatchEvent(new Event("products-updated"));
+  if (typeof window !== "undefined") window.dispatchEvent(new Event("products-updated"));
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,16 +79,19 @@ export async function createProduct(input: ProductInput): Promise<Product | null
   const { data: userData } = await supabase.auth.getUser();
   const userId = userData.user?.id;
   if (!userId) return null;
+
+  const validData = ProductInputSchema.parse(input);
+
   const { data, error } = await supabase
     .from("estoque")
     .insert({
       user_id: userId,
-      nome: input.nome,
-      quantidade: input.quantidade,
-      quantidade_minima: input.quantidadeMinima,
-      observacao: input.observacao,
-      preco_custo: input.precoCusto,
-      preco_venda: input.precoVenda,
+      nome: validData.nome,
+      quantidade: validData.quantidade,
+      quantidade_minima: validData.quantidadeMinima,
+      observacao: validData.observacao,
+      preco_custo: validData.precoCusto,
+      preco_venda: validData.precoVenda,
     })
     .select()
     .single();
@@ -92,19 +103,18 @@ export async function createProduct(input: ProductInput): Promise<Product | null
   return rowToProduct(data);
 }
 
-export async function updateProduct(
-  id: string,
-  input: ProductInput,
-): Promise<Product | null> {
+export async function updateProduct(id: string, input: ProductInput): Promise<Product | null> {
+  const validData = ProductInputSchema.parse(input);
+
   const { data, error } = await supabase
     .from("estoque")
     .update({
-      nome: input.nome,
-      quantidade: input.quantidade,
-      quantidade_minima: input.quantidadeMinima,
-      observacao: input.observacao,
-      preco_custo: input.precoCusto,
-      preco_venda: input.precoVenda,
+      nome: validData.nome,
+      quantidade: validData.quantidade,
+      quantidade_minima: validData.quantidadeMinima,
+      observacao: validData.observacao,
+      preco_custo: validData.precoCusto,
+      preco_venda: validData.precoVenda,
     })
     .eq("id", id)
     .select()

@@ -35,7 +35,7 @@ function AuthPage() {
   function describeError(message: string): string {
     const m = message.toLowerCase();
     if (m.includes("invalid login credentials")) {
-      return "Email ou senha incorretos. Se ainda não tem conta, clique em \"Criar agora\".";
+      return 'Email ou senha incorretos. Se ainda não tem conta, clique em "Criar agora".';
     }
     if (m.includes("email not confirmed")) {
       return "Email ainda não confirmado. Verifique sua caixa de entrada.";
@@ -109,9 +109,7 @@ function AuthPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <h1 className="font-serif text-3xl text-foreground">Alessandra Podóloga</h1>
-          <p className="text-sm text-muted-foreground mt-2">
-            Sistema de gestão de pacientes
-          </p>
+          <p className="text-sm text-muted-foreground mt-2">Sistema de gestão de pacientes</p>
         </div>
         <Card>
           <CardContent className="p-6">
@@ -169,9 +167,7 @@ function AuthPage() {
                 className="text-sm text-primary hover:underline"
                 disabled={submitting}
               >
-                {mode === "signin"
-                  ? "Não tem conta? Criar agora"
-                  : "Já tem conta? Entrar"}
+                {mode === "signin" ? "Não tem conta? Criar agora" : "Já tem conta? Entrar"}
               </button>
             </div>
           </CardContent>

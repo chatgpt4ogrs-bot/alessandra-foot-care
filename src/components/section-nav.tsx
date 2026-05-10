@@ -25,8 +25,7 @@ export function SectionNav() {
                     "group inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-medium text-muted-foreground transition-all hover:bg-accent/10 hover:text-foreground",
                   )}
                   activeProps={{
-                    className:
-                      "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary",
+                    className: "bg-primary/10 text-primary hover:bg-primary/15 hover:text-primary",
                   }}
                 >
                   <Icon className="h-4 w-4" />

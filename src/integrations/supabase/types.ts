@@ -1,339 +1,331 @@
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
-  }
+    PostgrestVersion: "14.5";
+  };
   public: {
     Tables: {
       agendamentos: {
         Row: {
-          created_at: string
-          data: string
-          horario: string
-          id: string
-          observacoes: string | null
-          paciente_id: string
-          user_id: string
-        }
+          created_at: string;
+          data: string;
+          horario: string;
+          id: string;
+          observacoes: string | null;
+          paciente_id: string;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string
-          data: string
-          horario: string
-          id?: string
-          observacoes?: string | null
-          paciente_id: string
-          user_id: string
-        }
+          created_at?: string;
+          data: string;
+          horario: string;
+          id?: string;
+          observacoes?: string | null;
+          paciente_id: string;
+          user_id: string;
+        };
         Update: {
-          created_at?: string
-          data?: string
-          horario?: string
-          id?: string
-          observacoes?: string | null
-          paciente_id?: string
-          user_id?: string
-        }
+          created_at?: string;
+          data?: string;
+          horario?: string;
+          id?: string;
+          observacoes?: string | null;
+          paciente_id?: string;
+          user_id?: string;
+        };
         Relationships: [
           {
-            foreignKeyName: "agendamentos_paciente_id_fkey"
-            columns: ["paciente_id"]
-            isOneToOne: false
-            referencedRelation: "pacientes"
-            referencedColumns: ["id"]
+            foreignKeyName: "agendamentos_paciente_id_fkey";
+            columns: ["paciente_id"];
+            isOneToOne: false;
+            referencedRelation: "pacientes";
+            referencedColumns: ["id"];
           },
-        ]
-      }
+        ];
+      };
       estoque: {
         Row: {
-          created_at: string
-          id: string
-          nome: string
-          observacao: string | null
-          preco_custo: number
-          preco_venda: number
-          quantidade: number
-          quantidade_minima: number
-          updated_at: string
-          user_id: string
-        }
+          created_at: string;
+          id: string;
+          nome: string;
+          observacao: string | null;
+          preco_custo: number;
+          preco_venda: number;
+          quantidade: number;
+          quantidade_minima: number;
+          updated_at: string;
+          user_id: string;
+        };
         Insert: {
-          created_at?: string
-          id?: string
-          nome: string
-          observacao?: string | null
-          preco_custo?: number
-          preco_venda?: number
-          quantidade?: number
-          quantidade_minima?: number
-          updated_at?: string
-          user_id: string
-        }
+          created_at?: string;
+          id?: string;
+          nome: string;
+          observacao?: string | null;
+          preco_custo?: number;
+          preco_venda?: number;
+          quantidade?: number;
+          quantidade_minima?: number;
+          updated_at?: string;
+          user_id: string;
+        };
         Update: {
-          created_at?: string
-          id?: string
-          nome?: string
-          observacao?: string | null
-          preco_custo?: number
-          preco_venda?: number
-          quantidade?: number
-          quantidade_minima?: number
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
+          created_at?: string;
+          id?: string;
+          nome?: string;
+          observacao?: string | null;
+          preco_custo?: number;
+          preco_venda?: number;
+          quantidade?: number;
+          quantidade_minima?: number;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
       pacientes: {
         Row: {
-          alergia: string | null
-          alergias: string | null
-          cirurgia_membros_inferiores: string | null
-          cirurgia_membros_inferiores_qual: string | null
-          convulsoes: string | null
-          cpf: string | null
-          created_at: string
-          data_nascimento: string | null
-          diabetes: string | null
-          diabetes_condicao: string | null
-          email: string | null
-          endereco: string | null
-          gestante: string | null
-          hipertensao: string | null
-          id: string
-          marca_passos_pinos: string | null
-          medicamentos: string | null
-          nome: string
-          observacoes_clinicas: string | null
-          observacoes_finais: string | null
-          pratica_esporte: string | null
-          pratica_esporte_qual: string | null
-          pressao_alta: string | null
-          problemas_cancerigenos: string | null
-          problemas_circulatorios: string | null
-          problemas_pes: string | null
-          telefone: string | null
-          tipo_calcado: string | null
-          tipo_meia: string | null
-          toma_medicamento: string | null
-          toma_medicamento_qual: string | null
-          updated_at: string
-          user_id: string
-        }
+          alergia: string | null;
+          alergias: string | null;
+          cirurgia_membros_inferiores: string | null;
+          cirurgia_membros_inferiores_qual: string | null;
+          convulsoes: string | null;
+          cpf: string | null;
+          created_at: string;
+          data_nascimento: string | null;
+          diabetes: string | null;
+          diabetes_condicao: string | null;
+          email: string | null;
+          endereco: string | null;
+          gestante: string | null;
+          hipertensao: string | null;
+          id: string;
+          marca_passos_pinos: string | null;
+          medicamentos: string | null;
+          nome: string;
+          observacoes_clinicas: string | null;
+          observacoes_finais: string | null;
+          pratica_esporte: string | null;
+          pratica_esporte_qual: string | null;
+          pressao_alta: string | null;
+          problemas_cancerigenos: string | null;
+          problemas_circulatorios: string | null;
+          problemas_pes: string | null;
+          telefone: string | null;
+          tipo_calcado: string | null;
+          tipo_meia: string | null;
+          toma_medicamento: string | null;
+          toma_medicamento_qual: string | null;
+          updated_at: string;
+          user_id: string;
+        };
         Insert: {
-          alergia?: string | null
-          alergias?: string | null
-          cirurgia_membros_inferiores?: string | null
-          cirurgia_membros_inferiores_qual?: string | null
-          convulsoes?: string | null
-          cpf?: string | null
-          created_at?: string
-          data_nascimento?: string | null
-          diabetes?: string | null
-          diabetes_condicao?: string | null
-          email?: string | null
-          endereco?: string | null
-          gestante?: string | null
-          hipertensao?: string | null
-          id?: string
-          marca_passos_pinos?: string | null
-          medicamentos?: string | null
-          nome: string
-          observacoes_clinicas?: string | null
-          observacoes_finais?: string | null
-          pratica_esporte?: string | null
-          pratica_esporte_qual?: string | null
-          pressao_alta?: string | null
-          problemas_cancerigenos?: string | null
-          problemas_circulatorios?: string | null
-          problemas_pes?: string | null
-          telefone?: string | null
-          tipo_calcado?: string | null
-          tipo_meia?: string | null
-          toma_medicamento?: string | null
-          toma_medicamento_qual?: string | null
-          updated_at?: string
-          user_id: string
-        }
+          alergia?: string | null;
+          alergias?: string | null;
+          cirurgia_membros_inferiores?: string | null;
+          cirurgia_membros_inferiores_qual?: string | null;
+          convulsoes?: string | null;
+          cpf?: string | null;
+          created_at?: string;
+          data_nascimento?: string | null;
+          diabetes?: string | null;
+          diabetes_condicao?: string | null;
+          email?: string | null;
+          endereco?: string | null;
+          gestante?: string | null;
+          hipertensao?: string | null;
+          id?: string;
+          marca_passos_pinos?: string | null;
+          medicamentos?: string | null;
+          nome: string;
+          observacoes_clinicas?: string | null;
+          observacoes_finais?: string | null;
+          pratica_esporte?: string | null;
+          pratica_esporte_qual?: string | null;
+          pressao_alta?: string | null;
+          problemas_cancerigenos?: string | null;
+          problemas_circulatorios?: string | null;
+          problemas_pes?: string | null;
+          telefone?: string | null;
+          tipo_calcado?: string | null;
+          tipo_meia?: string | null;
+          toma_medicamento?: string | null;
+          toma_medicamento_qual?: string | null;
+          updated_at?: string;
+          user_id: string;
+        };
         Update: {
-          alergia?: string | null
-          alergias?: string | null
-          cirurgia_membros_inferiores?: string | null
-          cirurgia_membros_inferiores_qual?: string | null
-          convulsoes?: string | null
-          cpf?: string | null
-          created_at?: string
-          data_nascimento?: string | null
-          diabetes?: string | null
-          diabetes_condicao?: string | null
-          email?: string | null
-          endereco?: string | null
-          gestante?: string | null
-          hipertensao?: string | null
-          id?: string
-          marca_passos_pinos?: string | null
-          medicamentos?: string | null
-          nome?: string
-          observacoes_clinicas?: string | null
-          observacoes_finais?: string | null
-          pratica_esporte?: string | null
-          pratica_esporte_qual?: string | null
-          pressao_alta?: string | null
-          problemas_cancerigenos?: string | null
-          problemas_circulatorios?: string | null
-          problemas_pes?: string | null
-          telefone?: string | null
-          tipo_calcado?: string | null
-          tipo_meia?: string | null
-          toma_medicamento?: string | null
-          toma_medicamento_qual?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-    }
+          alergia?: string | null;
+          alergias?: string | null;
+          cirurgia_membros_inferiores?: string | null;
+          cirurgia_membros_inferiores_qual?: string | null;
+          convulsoes?: string | null;
+          cpf?: string | null;
+          created_at?: string;
+          data_nascimento?: string | null;
+          diabetes?: string | null;
+          diabetes_condicao?: string | null;
+          email?: string | null;
+          endereco?: string | null;
+          gestante?: string | null;
+          hipertensao?: string | null;
+          id?: string;
+          marca_passos_pinos?: string | null;
+          medicamentos?: string | null;
+          nome?: string;
+          observacoes_clinicas?: string | null;
+          observacoes_finais?: string | null;
+          pratica_esporte?: string | null;
+          pratica_esporte_qual?: string | null;
+          pressao_alta?: string | null;
+          problemas_cancerigenos?: string | null;
+          problemas_circulatorios?: string | null;
+          problemas_pes?: string | null;
+          telefone?: string | null;
+          tipo_calcado?: string | null;
+          tipo_meia?: string | null;
+          toma_medicamento?: string | null;
+          toma_medicamento_qual?: string | null;
+          updated_at?: string;
+          user_id?: string;
+        };
+        Relationships: [];
+      };
+    };
     Views: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Functions: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     Enums: {
-      [_ in never]: never
-    }
+      [_ in never]: never;
+    };
     CompositeTypes: {
-      [_ in never]: never
-    }
-  }
-}
+      [_ in never]: never;
+    };
+  };
+};
 
-type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
+type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">;
 
-type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">]
+type DefaultSchema = DatabaseWithoutInternals[Extract<keyof Database, "public">];
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
     | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
       DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
+      Row: infer R;
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])
-    ? (DefaultSchema["Tables"] &
-        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
-        Row: infer R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] & DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R;
       }
       ? R
       : never
-    : never
+    : never;
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Insert: infer I
+      Insert: infer I;
     }
     ? I
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Insert: infer I
+        Insert: infer I;
       }
       ? I
       : never
-    : never
+    : never;
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
     | keyof DefaultSchema["Tables"]
     | { schema: keyof DatabaseWithoutInternals },
   TableName extends DefaultSchemaTableNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
     : never = never,
 > = DefaultSchemaTableNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
-      Update: infer U
+      Update: infer U;
     }
     ? U
     : never
   : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
     ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
-        Update: infer U
+        Update: infer U;
       }
       ? U
       : never
-    : never
+    : never;
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
     | keyof DefaultSchema["Enums"]
     | { schema: keyof DatabaseWithoutInternals },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
     : never = never,
 > = DefaultSchemaEnumNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
   : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
     ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
-    : never
+    : never;
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
     | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof DatabaseWithoutInternals },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof DatabaseWithoutInternals
+    schema: keyof DatabaseWithoutInternals;
   }
     ? keyof DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
     : never = never,
 > = PublicCompositeTypeNameOrOptions extends {
-  schema: keyof DatabaseWithoutInternals
+  schema: keyof DatabaseWithoutInternals;
 }
   ? DatabaseWithoutInternals[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
   : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
     ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
-    : never
+    : never;
 
 export const Constants = {
   public: {
     Enums: {},
   },
-} as const
+} as const;

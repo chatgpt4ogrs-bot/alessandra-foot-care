@@ -1,10 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  getAllPatients,
-  getCachedPatients,
-  getPatient,
-  type Patient,
-} from "@/lib/patients";
+import { getAllPatients, getCachedPatients, getPatient, type Patient } from "@/lib/patients";
 
 let lastFetch = 0;
 const STALE_MS = 30_000;
@@ -33,7 +28,6 @@ export function usePatients() {
       cancelled = true;
       window.removeEventListener("patients-updated", handler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { patients, loaded };

@@ -21,7 +21,7 @@ function HomePage() {
   return (
     <RequireAuth>
       <AppLayout>
-        <div className="px-8 py-8">
+        <div className="p-4 md:p-8">
           <DashboardView />
         </div>
       </AppLayout>

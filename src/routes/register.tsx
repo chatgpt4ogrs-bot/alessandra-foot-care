@@ -1,77 +1,94 @@
-import { createFileRoute, useRouter } from '@tanstack/react-router'
-import { useState } from 'react'
-import { supabase } from '@/integrations/supabase/client'
-import { Eye, EyeOff, User, Mail, Phone, Lock, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react'
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Eye,
+  EyeOff,
+  User,
+  Mail,
+  Phone,
+  Lock,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+} from "lucide-react";
 
-export const Route = createFileRoute('/register')({
+export const Route = createFileRoute("/register")({
   component: RegisterPage,
-})
+});
 
 // ─── Helpers ─────────────────────────────────────────
 
 function formatPhone(value: string) {
-  const digits = value.replace(/\D/g, '').slice(0, 11)
-  if (digits.length <= 2) return `(${digits}`
-  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`
+  const digits = value.replace(/\D/g, "").slice(0, 11);
+  if (digits.length <= 2) return `(${digits}`;
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
-function validateForm(data: any) {
-  const errors: any = {}
+import { z } from "zod";
 
-  if (!data.nome || data.nome.length < 3)
-    errors.nome = 'Nome inválido'
+const RegisterSchema = z
+  .object({
+    nome: z.string().trim().min(3, "Nome deve ter no mínimo 3 caracteres").max(255),
+    email: z.string().trim().email("Email inválido").max(255),
+    telefone: z
+      .string()
+      .trim()
+      .refine((val) => val.replace(/\D/g, "").length >= 10, "Telefone inválido"),
+    senha: z.string().min(8, "A senha deve ter no mínimo 8 caracteres").max(255),
+    confirmarSenha: z.string().max(255),
+  })
+  .refine((data) => data.senha === data.confirmarSenha, {
+    message: "Senhas diferentes",
+    path: ["confirmarSenha"],
+  });
 
-  if (!data.email.includes('@'))
-    errors.email = 'Email inválido'
-
-  if (data.telefone.replace(/\D/g, '').length < 10)
-    errors.telefone = 'Telefone inválido'
-
-  if (data.senha.length < 8)
-    errors.senha = 'Senha muito curta'
-
-  if (data.senha !== data.confirmarSenha)
-    errors.confirmarSenha = 'Senhas diferentes'
-
-  return errors
-}
+type FormErrors = Partial<Record<keyof z.infer<typeof RegisterSchema>, string>>;
 
 // ─── Component ───────────────────────────────────────
 
 export default function RegisterPage() {
-  const router = useRouter()
+  const router = useRouter();
 
   const [form, setForm] = useState({
-    nome: '',
-    email: '',
-    telefone: '',
-    senha: '',
-    confirmarSenha: '',
-  })
+    nome: "",
+    email: "",
+    telefone: "",
+    senha: "",
+    confirmarSenha: "",
+  });
 
-  const [errors, setErrors] = useState<any>({})
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [globalError, setGlobalError] = useState('')
-  const [showSenha, setShowSenha] = useState(false)
-  const [showConfirmar, setShowConfirmar] = useState(false)
+  const [errors, setErrors] = useState<FormErrors>({});
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [globalError, setGlobalError] = useState("");
+  const [showSenha, setShowSenha] = useState(false);
+  const [showConfirmar, setShowConfirmar] = useState(false);
 
   function handleChange(field: string, value: string) {
-    const val = field === 'telefone' ? formatPhone(value) : value
-    setForm(prev => ({ ...prev, [field]: val }))
+    const val = field === "telefone" ? formatPhone(value) : value;
+    setForm((prev) => ({ ...prev, [field]: val }));
   }
 
   async function handleRegister() {
-    setGlobalError('')
-    const validation = validateForm(form)
+    setGlobalError("");
+    setErrors({});
 
-    if (Object.keys(validation).length > 0) {
-      setErrors(validation)
-      return
+    const parsed = RegisterSchema.safeParse(form);
+    if (!parsed.success) {
+      const formattedErrors: FormErrors = {};
+      parsed.error.issues.forEach((issue) => {
+        const path = issue.path[0] as keyof FormErrors;
+        if (!formattedErrors[path]) {
+          formattedErrors[path] = issue.message;
+        }
+      });
+      setErrors(formattedErrors);
+      return;
     }
 
-    setLoading(true)
+    setLoading(true);
 
     try {
       const { data, error } = await supabase.auth.signUp({
@@ -83,28 +100,27 @@ export default function RegisterPage() {
             telefone: form.telefone,
           },
         },
-      })
+      });
 
       if (error) {
-        setGlobalError(error.message)
-        return
+        setGlobalError(error.message);
+        return;
       }
 
       if (data.user) {
-        await supabase.from('usuarios').insert({
+        await supabase.from("usuarios").insert({
           id: data.user.id,
           nome: form.nome,
           email: form.email,
           telefone: form.telefone,
-        })
+        });
       }
 
-      setSuccess(true)
-
+      setSuccess(true);
     } catch (err) {
-      setGlobalError('Erro inesperado')
+      setGlobalError("Erro inesperado");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
   }
 
@@ -119,14 +135,14 @@ export default function RegisterPage() {
           <p className="text-sm mt-2">Verifique seu email</p>
 
           <button
-            onClick={() => router.navigate({ to: '/auth' })}
+            onClick={() => router.navigate({ to: "/auth" })}
             className="mt-4 bg-teal-500 text-white px-4 py-2 rounded"
           >
             Ir para login
           </button>
         </div>
       </div>
-    )
+    );
   }
 
   // ─── Form ──────────────────────────────────────────
@@ -134,22 +150,19 @@ export default function RegisterPage() {
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
       <div className="bg-white p-8 rounded-xl shadow w-full max-w-md space-y-4">
-
         <h1 className="text-xl font-bold mb-4">Criar conta</h1>
 
         {globalError && (
-          <div className="bg-red-100 text-red-600 p-2 mb-3 rounded">
-            {globalError}
-          </div>
+          <div className="bg-red-100 text-red-600 p-2 mb-3 rounded">{globalError}</div>
         )}
 
         <div className="space-y-3">
           <div>
             <input
               placeholder="Nome"
-              className="w-full px-3 py-2 border rounded outline-none focus:border-teal-500"
+              className="w-full px-4 py-3 border rounded outline-none focus:border-teal-500"
               value={form.nome}
-              onChange={e => handleChange('nome', e.target.value)}
+              onChange={(e) => handleChange("nome", e.target.value)}
             />
             {errors.nome && <p className="text-red-500 text-xs">{errors.nome}</p>}
           </div>
@@ -157,9 +170,9 @@ export default function RegisterPage() {
           <div>
             <input
               placeholder="Email"
-              className="w-full px-3 py-2 border rounded outline-none focus:border-teal-500"
+              className="w-full px-4 py-3 border rounded outline-none focus:border-teal-500"
               value={form.email}
-              onChange={e => handleChange('email', e.target.value)}
+              onChange={(e) => handleChange("email", e.target.value)}
             />
             {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
           </div>
@@ -167,20 +180,20 @@ export default function RegisterPage() {
           <div>
             <input
               placeholder="Telefone"
-              className="w-full px-3 py-2 border rounded outline-none focus:border-teal-500"
+              className="w-full px-4 py-3 border rounded outline-none focus:border-teal-500"
               value={form.telefone}
-              onChange={e => handleChange('telefone', e.target.value)}
+              onChange={(e) => handleChange("telefone", e.target.value)}
             />
             {errors.telefone && <p className="text-red-500 text-xs">{errors.telefone}</p>}
           </div>
 
           <div className="relative">
             <input
-              type={showSenha ? 'text' : 'password'}
+              type={showSenha ? "text" : "password"}
               placeholder="Senha"
-              className="w-full px-3 py-2 border rounded outline-none focus:border-teal-500"
+              className="w-full px-4 py-3 border rounded outline-none focus:border-teal-500"
               value={form.senha}
-              onChange={e => handleChange('senha', e.target.value)}
+              onChange={(e) => handleChange("senha", e.target.value)}
             />
             <button
               type="button"
@@ -194,11 +207,11 @@ export default function RegisterPage() {
 
           <div className="relative">
             <input
-              type={showConfirmar ? 'text' : 'password'}
+              type={showConfirmar ? "text" : "password"}
               placeholder="Confirmar senha"
-              className="w-full px-3 py-2 border rounded outline-none focus:border-teal-500"
+              className="w-full px-4 py-3 border rounded outline-none focus:border-teal-500"
               value={form.confirmarSenha}
-              onChange={e => handleChange('confirmarSenha', e.target.value)}
+              onChange={(e) => handleChange("confirmarSenha", e.target.value)}
             />
             <button
               type="button"
@@ -207,26 +220,27 @@ export default function RegisterPage() {
             >
               {showConfirmar ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
-            {errors.confirmarSenha && <p className="text-red-500 text-xs">{errors.confirmarSenha}</p>}
+            {errors.confirmarSenha && (
+              <p className="text-red-500 text-xs">{errors.confirmarSenha}</p>
+            )}
           </div>
         </div>
 
         <button
           onClick={handleRegister}
           disabled={loading}
-          className="w-full bg-teal-500 hover:bg-teal-600 text-white py-2 rounded mt-4"
+          className="w-full bg-teal-500 hover:bg-teal-600 text-white py-3 rounded-md mt-4 font-medium"
         >
-          {loading ? 'Criando...' : 'Criar conta'}
+          {loading ? "Criando..." : "Criar conta"}
         </button>
-        
+
         <button
-          onClick={() => router.navigate({ to: '/auth' })}
+          onClick={() => router.navigate({ to: "/auth" })}
           className="w-full text-teal-600 text-sm hover:underline mt-2"
         >
           Já tenho uma conta
         </button>
-
       </div>
     </div>
-  )
+  );
 }

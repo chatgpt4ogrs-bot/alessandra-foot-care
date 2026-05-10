@@ -17,10 +17,8 @@ function NovoPaciente() {
   return (
     <RequireAuth>
       <AppLayout>
-        <div className="w-full max-w-3xl mx-auto px-8 py-8">
-          <h2 className="font-serif text-3xl text-foreground mb-6">
-            Nova Paciente
-          </h2>
+        <div className="w-full max-w-3xl mx-auto p-4 md:p-8">
+          <h2 className="font-serif text-3xl text-foreground mb-6">Nova Paciente</h2>
           <PatientForm mode="create" />
         </div>
       </AppLayout>

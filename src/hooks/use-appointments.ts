@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  getAllAppointments,
-  getCachedAppointments,
-  type Appointment,
-} from "@/lib/appointments";
+import { getAllAppointments, getCachedAppointments, type Appointment } from "@/lib/appointments";
 
 let lastFetch = 0;
 const STALE_MS = 30_000;
@@ -32,7 +28,6 @@ export function useAppointments() {
       cancelled = true;
       window.removeEventListener("appointments-updated", handler);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return { appointments, loaded };

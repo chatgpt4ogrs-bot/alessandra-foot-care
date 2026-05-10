@@ -1,14 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { useNavigate } from "@tanstack/react-router";
-import {
-  Stethoscope,
-  User,
-  FileText,
-  Save,
-  ArrowLeft,
-  Footprints,
-  HeartPulse,
-} from "lucide-react";
+import { Stethoscope, User, FileText, Save, ArrowLeft, Footprints, HeartPulse } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,11 +36,7 @@ function YesNoField({
   return (
     <div className="space-y-2">
       <Label className="text-sm font-medium">{label}</Label>
-      <RadioGroup
-        value={value}
-        onValueChange={(v) => onChange(v as YesNo)}
-        className="flex gap-6"
-      >
+      <RadioGroup value={value} onValueChange={(v) => onChange(v as YesNo)} className="flex gap-6">
         <div className="flex items-center gap-2">
           <RadioGroupItem value="sim" id={`${name}-sim`} />
           <Label htmlFor={`${name}-sim`} className="font-normal cursor-pointer">
@@ -90,10 +78,7 @@ function OptionsField<T extends string>({
         {options.map((opt) => (
           <div key={opt.value} className="flex items-center gap-2">
             <RadioGroupItem value={opt.value} id={`${name}-${opt.value}`} />
-            <Label
-              htmlFor={`${name}-${opt.value}`}
-              className="font-normal cursor-pointer"
-            >
+            <Label htmlFor={`${name}-${opt.value}`} className="font-normal cursor-pointer">
               {opt.label}
             </Label>
           </div>
@@ -160,10 +145,7 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
       toast.error("CPF inválido. Use o formato 000.000.000-00.");
       return;
     }
-    if (
-      data.cirurgiaMembrosInferiores === "sim" &&
-      !data.cirurgiaMembrosInferioresQual.trim()
-    ) {
+    if (data.cirurgiaMembrosInferiores === "sim" && !data.cirurgiaMembrosInferioresQual.trim()) {
       toast.error("Informe qual cirurgia nos membros inferiores.");
       return;
     }

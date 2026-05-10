@@ -39,9 +39,7 @@ export const Route = createFileRoute("/paciente/$id")({
 function Field({ label, value }: { label: string; value?: string }) {
   return (
     <div>
-      <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">
-        {label}
-      </p>
+      <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">{label}</p>
       <p className="text-foreground mt-1 whitespace-pre-wrap">
         {value && value.trim() ? value : <span className="text-muted-foreground/60">—</span>}
       </p>
@@ -50,8 +48,7 @@ function Field({ label, value }: { label: string; value?: string }) {
 }
 
 function YesNoBadge({ label, value }: { label: string; value: string }) {
-  const display =
-    value === "sim" ? "Sim" : value === "nao" ? "Não" : "—";
+  const display = value === "sim" ? "Sim" : value === "nao" ? "Não" : "—";
   const cls =
     value === "sim"
       ? "bg-destructive/10 text-destructive"
@@ -60,12 +57,8 @@ function YesNoBadge({ label, value }: { label: string; value: string }) {
         : "bg-muted text-muted-foreground";
   return (
     <div>
-      <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">
-        {label}
-      </p>
-      <span
-        className={`inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-sm font-medium ${cls}`}
-      >
+      <p className="text-xs uppercase tracking-wide text-muted-foreground font-medium">{label}</p>
+      <span className={`inline-block mt-1.5 px-2.5 py-0.5 rounded-full text-sm font-medium ${cls}`}>
         {display}
       </span>
     </div>
@@ -88,7 +81,7 @@ function VerPaciente() {
     return (
       <RequireAuth>
         <AppLayout>
-          <div className="px-8 py-8" />
+          <div className="p-4 md:p-8" />
         </AppLayout>
       </RequireAuth>
     );
@@ -98,7 +91,7 @@ function VerPaciente() {
     return (
       <RequireAuth>
         <AppLayout>
-          <div className="px-8 py-10 text-center">
+          <div className="p-4 py-8 md:p-8 text-center">
             <p className="text-muted-foreground mb-4">Paciente não encontrada.</p>
             <Button asChild>
               <Link to="/pacientes">Voltar</Link>
@@ -114,7 +107,7 @@ function VerPaciente() {
   return (
     <RequireAuth>
       <AppLayout>
-        <div className="w-full mx-auto px-8 py-8 max-w-3xl space-y-6">
+        <div className="w-full mx-auto p-4 md:p-8 max-w-3xl space-y-6">
           <div className="flex items-center justify-between gap-3">
             <Button asChild variant="ghost" size="sm">
               <Link to="/pacientes">
@@ -181,37 +174,22 @@ function VerPaciente() {
             <CardContent className="grid gap-5 md:grid-cols-3">
               <YesNoBadge label="Gestante" value={patient.gestante} />
               <YesNoBadge label="Hipertensão" value={patient.hipertensao} />
-              <YesNoBadge
-                label="Cirurgia membros inf."
-                value={patient.cirurgiaMembrosInferiores}
-              />
+              <YesNoBadge label="Cirurgia membros inf." value={patient.cirurgiaMembrosInferiores} />
               {patient.cirurgiaMembrosInferiores === "sim" && (
                 <div className="md:col-span-3">
-                  <Field
-                    label="Qual cirurgia"
-                    value={patient.cirurgiaMembrosInferioresQual}
-                  />
+                  <Field label="Qual cirurgia" value={patient.cirurgiaMembrosInferioresQual} />
                 </div>
               )}
-              <YesNoBadge
-                label="Pratica esporte"
-                value={patient.praticaEsporte}
-              />
+              <YesNoBadge label="Pratica esporte" value={patient.praticaEsporte} />
               {patient.praticaEsporte === "sim" && (
                 <div className="md:col-span-3">
                   <Field label="Qual esporte" value={patient.praticaEsporteQual} />
                 </div>
               )}
-              <YesNoBadge
-                label="Toma medicamento"
-                value={patient.tomaMedicamento}
-              />
+              <YesNoBadge label="Toma medicamento" value={patient.tomaMedicamento} />
               {patient.tomaMedicamento === "sim" && (
                 <div className="md:col-span-3">
-                  <Field
-                    label="Qual medicamento"
-                    value={patient.tomaMedicamentoQual}
-                  />
+                  <Field label="Qual medicamento" value={patient.tomaMedicamentoQual} />
                 </div>
               )}
               <div className="md:col-span-3">
@@ -221,10 +199,7 @@ function VerPaciente() {
                 <Field label="Problemas nos pés" value={patient.problemasPes} />
               </div>
               <div className="md:col-span-3">
-                <Field
-                  label="Observações clínicas"
-                  value={patient.observacoesClinicas}
-                />
+                <Field label="Observações clínicas" value={patient.observacoesClinicas} />
               </div>
             </CardContent>
           </Card>
@@ -270,21 +245,12 @@ function VerPaciente() {
               </CardTitle>
             </CardHeader>
             <CardContent className="grid gap-5 md:grid-cols-3">
-              <YesNoBadge
-                label="Marca-passo / pinos"
-                value={patient.marcaPassosPinos}
-              />
-              <YesNoBadge
-                label="Problemas cancerígenos"
-                value={patient.problemasCancerigenos}
-              />
+              <YesNoBadge label="Marca-passo / pinos" value={patient.marcaPassosPinos} />
+              <YesNoBadge label="Problemas cancerígenos" value={patient.problemasCancerigenos} />
               <YesNoBadge label="Pressão alta" value={patient.pressaoAlta} />
               <YesNoBadge label="Diabetes" value={patient.diabetesCondicao} />
               <YesNoBadge label="Convulsões" value={patient.convulsoes} />
-              <YesNoBadge
-                label="Problemas circulatórios"
-                value={patient.problemasCirculatorios}
-              />
+              <YesNoBadge label="Problemas circulatórios" value={patient.problemasCirculatorios} />
               <YesNoBadge label="Alergia" value={patient.alergia} />
             </CardContent>
           </Card>

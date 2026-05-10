@@ -1,12 +1,6 @@
 import { useMemo } from "react";
 import { Link } from "@tanstack/react-router";
-import {
-  Users,
-  CalendarDays,
-  AlertTriangle,
-  CalendarClock,
-  ArrowRight,
-} from "lucide-react";
+import { Users, CalendarDays, AlertTriangle, CalendarClock, ArrowRight } from "lucide-react";
 import { format, isSameDay, parseISO, isAfter, startOfToday } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Card } from "@/components/ui/card";
@@ -24,14 +18,7 @@ interface MetricCardProps {
   to: "/pacientes" | "/agenda" | "/estoque";
 }
 
-function MetricCard({
-  label,
-  value,
-  hint,
-  icon: Icon,
-  accent = "primary",
-  to,
-}: MetricCardProps) {
+function MetricCard({ label, value, hint, icon: Icon, accent = "primary", to }: MetricCardProps) {
   const accentMap = {
     primary: "bg-primary/10 text-primary",
     accent: "bg-accent/15 text-accent",
@@ -55,9 +42,7 @@ function MetricCard({
           <p className="mt-1 text-3xl font-semibold tracking-tight tabular-nums text-foreground">
             {value}
           </p>
-          {hint && (
-            <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
-          )}
+          {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
         </div>
       </Card>
     </Link>
@@ -87,18 +72,13 @@ export function DashboardView() {
           return isAfter(d, today) || isSameDay(d, today);
         })
         .sort((a, b) =>
-          a.date === b.date
-            ? a.time.localeCompare(b.time)
-            : a.date.localeCompare(b.date),
+          a.date === b.date ? a.time.localeCompare(b.time) : a.date.localeCompare(b.date),
         )
         .slice(0, 5),
     [appointments, today],
   );
 
-  const lowStock = useMemo(
-    () => products.filter((p) => isLowStock(p)),
-    [products],
-  );
+  const lowStock = useMemo(() => products.filter((p) => isLowStock(p)), [products]);
 
   function patientName(id: string) {
     return patients.find((p) => p.id === id)?.nome ?? "Paciente removido";
@@ -117,11 +97,7 @@ export function DashboardView() {
         <MetricCard
           label="Pacientes cadastrados"
           value={patients.length}
-          hint={
-            patients.length === 0
-              ? "Cadastre seu primeiro paciente"
-              : "Total no sistema"
-          }
+          hint={patients.length === 0 ? "Cadastre seu primeiro paciente" : "Total no sistema"}
           icon={Users}
           accent="primary"
           to="/pacientes"
@@ -161,14 +137,9 @@ export function DashboardView() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <CalendarClock className="h-4 w-4 text-primary" />
-              <h2 className="font-semibold text-foreground">
-                Próximos agendamentos
-              </h2>
+              <h2 className="font-semibold text-foreground">Próximos agendamentos</h2>
             </div>
-            <Link
-              to="/agenda"
-              className="text-xs font-medium text-primary hover:underline"
-            >
+            <Link to="/agenda" className="text-xs font-medium text-primary hover:underline">
               Ver agenda
             </Link>
           </div>
@@ -179,10 +150,7 @@ export function DashboardView() {
           ) : (
             <ul className="divide-y divide-border/40">
               {upcoming.map((a) => (
-                <li
-                  key={a.id}
-                  className="py-3 flex items-center justify-between gap-3"
-                >
+                <li key={a.id} className="py-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">
                       {patientName(a.patientId)}
@@ -208,10 +176,7 @@ export function DashboardView() {
               <AlertTriangle className="h-4 w-4 text-destructive" />
               <h2 className="font-semibold text-foreground">Estoque baixo</h2>
             </div>
-            <Link
-              to="/estoque"
-              className="text-xs font-medium text-primary hover:underline"
-            >
+            <Link to="/estoque" className="text-xs font-medium text-primary hover:underline">
               Ver estoque
             </Link>
           </div>
@@ -222,17 +187,10 @@ export function DashboardView() {
           ) : (
             <ul className="divide-y divide-border/40">
               {lowStock.slice(0, 5).map((p) => (
-                <li
-                  key={p.id}
-                  className="py-3 flex items-center justify-between gap-3"
-                >
+                <li key={p.id} className="py-3 flex items-center justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {p.nome}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Mínimo: {p.quantidadeMinima}
-                    </p>
+                    <p className="text-sm font-medium text-foreground truncate">{p.nome}</p>
+                    <p className="text-xs text-muted-foreground">Mínimo: {p.quantidadeMinima}</p>
                   </div>
                   <span className="text-sm font-semibold tabular-nums text-destructive bg-destructive/10 px-2.5 py-1 rounded-md">
                     {p.quantidade}

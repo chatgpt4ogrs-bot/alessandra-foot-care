@@ -19,11 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { QuickPatientDialog } from "@/components/quick-patient-dialog";
 import { usePatients } from "@/hooks/use-patients";
 import { useAppointments } from "@/hooks/use-appointments";
@@ -128,11 +124,7 @@ export function AgendaView() {
                     Nenhuma paciente cadastrada ainda.
                   </p>
                   <div className="flex flex-wrap justify-center gap-2">
-                    <Button
-                      type="button"
-                      size="sm"
-                      onClick={() => setQuickOpen(true)}
-                    >
+                    <Button type="button" size="sm" onClick={() => setQuickOpen(true)}>
                       <UserPlus className="h-4 w-4 mr-1" />
                       Novo paciente
                     </Button>
@@ -182,9 +174,7 @@ export function AgendaView() {
                           <Button
                             type="button"
                             variant="outline"
-                            className={cn(
-                              "justify-start text-left font-normal",
-                            )}
+                            className={cn("justify-start text-left font-normal")}
                           >
                             <CalendarIcon className="mr-2 h-4 w-4" />
                             {format(selectedDate, "dd/MM/yyyy")}
@@ -234,9 +224,7 @@ export function AgendaView() {
           </Card>
 
           <div>
-            <h3 className="font-serif text-xl text-foreground mb-3">
-              Atendimentos do dia
-            </h3>
+            <h3 className="font-serif text-xl text-foreground mb-3">Atendimentos do dia</h3>
             {dayAppointments.length === 0 ? (
               <Card className="border-dashed">
                 <CardContent className="py-10 flex flex-col items-center text-center">
@@ -255,9 +243,7 @@ export function AgendaView() {
                     <CardContent className="py-4 flex items-start gap-4">
                       <div className="flex flex-col items-center justify-center min-w-16 px-3 py-2 rounded-lg bg-accent/40">
                         <Clock className="h-4 w-4 text-primary mb-0.5" />
-                        <span className="font-medium text-foreground">
-                          {a.time}
-                        </span>
+                        <span className="font-medium text-foreground">{a.time}</span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <Link

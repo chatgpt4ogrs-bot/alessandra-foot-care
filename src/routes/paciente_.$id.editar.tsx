@@ -18,7 +18,7 @@ function EditarPaciente() {
   if (!loaded) {
     return (
       <AppLayout>
-        <div className="px-8 py-8" />
+        <div className="p-4 md:p-8" />
       </AppLayout>
     );
   }
@@ -26,7 +26,7 @@ function EditarPaciente() {
   if (!patient) {
     return (
       <AppLayout>
-        <div className="px-8 py-10 text-center">
+        <div className="p-4 py-8 md:p-8 text-center">
           <p className="text-muted-foreground mb-4">Paciente não encontrada.</p>
           <Button asChild>
             <Link to="/pacientes">Voltar</Link>
@@ -40,10 +40,8 @@ function EditarPaciente() {
 
   return (
     <AppLayout>
-      <div className="w-full max-w-3xl mx-auto px-8 py-8">
-        <h2 className="font-serif text-3xl text-foreground mb-6">
-          Editar Paciente
-        </h2>
+      <div className="w-full max-w-3xl mx-auto p-4 md:p-8">
+        <h2 className="font-serif text-3xl text-foreground mb-6">Editar Paciente</h2>
         <PatientForm mode="edit" patientId={patient.id} initial={initial} />
       </div>
     </AppLayout>
