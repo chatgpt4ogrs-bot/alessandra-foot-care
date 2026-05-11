@@ -20,7 +20,6 @@ export const Route = createFileRoute("/auth")({
 function AuthPage() {
   const navigate = useNavigate();
   const { session, loading } = useAuth();
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -35,16 +34,10 @@ function AuthPage() {
   function describeError(message: string): string {
     const m = message.toLowerCase();
     if (m.includes("invalid login credentials")) {
-      return 'Email ou senha incorretos. Se ainda não tem conta, clique em "Criar agora".';
+      return "Email ou senha incorretos.";
     }
     if (m.includes("email not confirmed")) {
       return "Email ainda não confirmado. Verifique sua caixa de entrada.";
-    }
-    if (m.includes("user already registered")) {
-      return "Este email já está cadastrado. Faça login.";
-    }
-    if (m.includes("password should be at least")) {
-      return "A senha precisa ter pelo menos 6 caracteres.";
     }
     if (m.includes("failed to fetch") || m.includes("network")) {
       return "Falha de conexão com o servidor. Verifique sua internet.";
@@ -61,39 +54,18 @@ function AuthPage() {
     }
     setSubmitting(true);
     try {
-      if (mode === "signin") {
-        const { data, error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password,
-        });
-        if (error) {
-          console.error("[auth] signIn error:", error);
-          setErrorMsg(describeError(error.message));
-          return;
-        }
-        console.log("[auth] signIn success:", data.user?.email);
-        toast.success("Bem-vinda!");
-        navigate({ to: "/" });
-      } else {
-        const { data, error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password,
-          options: { emailRedirectTo: `${window.location.origin}/` },
-        });
-        if (error) {
-          console.error("[auth] signUp error:", error);
-          setErrorMsg(describeError(error.message));
-          return;
-        }
-        console.log("[auth] signUp success:", data.user?.email, "session:", !!data.session);
-        if (data.session) {
-          toast.success("Conta criada! Você já está logada.");
-          navigate({ to: "/" });
-        } else {
-          toast.success("Conta criada! Você já pode entrar.");
-          setMode("signin");
-        }
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+      if (error) {
+        console.error("[auth] signIn error:", error);
+        setErrorMsg(describeError(error.message));
+        return;
       }
+      console.log("[auth] signIn success:", data.user?.email);
+      toast.success("Bem-vinda!");
+      navigate({ to: "/" });
     } catch (err) {
       if (import.meta.env.DEV) {
         console.error("[auth] unexpected error:", err);
@@ -138,7 +110,7 @@ function AuthPage() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  autoComplete={mode === "signin" ? "current-password" : "new-password"}
+                  autoComplete="current-password"
                   minLength={6}
                   disabled={submitting}
                   required
@@ -150,26 +122,11 @@ function AuthPage() {
                     <Loader2 className="h-4 w-4 animate-spin" />
                     Aguarde...
                   </>
-                ) : mode === "signin" ? (
-                  "Entrar"
                 ) : (
-                  "Criar conta"
+                  "Entrar"
                 )}
               </Button>
             </form>
-            <div className="mt-4 text-center">
-              <button
-                type="button"
-                onClick={() => {
-                  setMode(mode === "signin" ? "signup" : "signin");
-                  setErrorMsg(null);
-                }}
-                className="text-sm text-primary hover:underline"
-                disabled={submitting}
-              >
-                {mode === "signin" ? "Não tem conta? Criar agora" : "Já tem conta? Entrar"}
-              </button>
-            </div>
           </CardContent>
         </Card>
       </div>
