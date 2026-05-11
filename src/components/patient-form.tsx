@@ -195,6 +195,78 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
+            <User className="h-5 w-5 text-primary" />
+            Dados Pessoais
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-5 md:grid-cols-2">
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="nome">Nome completo *</Label>
+            <Input
+              id="nome"
+              value={data.nome}
+              onChange={(e) => set("nome", e.target.value)}
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="cpf">CPF</Label>
+            <Input
+              id="cpf"
+              value={data.cpf}
+              onChange={(e) => {
+                const raw = e.target.value.replace(/\D/g, "").substring(0, 11);
+                const formatted = raw
+                  .replace(/(\d{3})(\d)/, "$1.$2")
+                  .replace(/(\d{3})(\d)/, "$1.$2")
+                  .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+                set("cpf", formatted);
+              }}
+              placeholder="000.000.000-00"
+              maxLength={14}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="dataNascimento">Data de nascimento</Label>
+            <Input
+              id="dataNascimento"
+              type="date"
+              value={data.dataNascimento}
+              onChange={(e) => set("dataNascimento", e.target.value)}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="telefone">Telefone (WhatsApp)</Label>
+            <Input
+              id="telefone"
+              value={data.telefone}
+              onChange={(e) => set("telefone", e.target.value)}
+              placeholder="(00) 00000-0000"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              type="email"
+              value={data.email}
+              onChange={(e) => set("email", e.target.value)}
+            />
+          </div>
+          <div className="space-y-2 md:col-span-2">
+            <Label htmlFor="endereco">Endereço</Label>
+            <Input
+              id="endereco"
+              value={data.endereco}
+              onChange={(e) => set("endereco", e.target.value)}
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
             <Stethoscope className="h-5 w-5 text-primary" />
             Ficha de Anamnese
           </CardTitle>
@@ -359,78 +431,6 @@ export function PatientForm({ initial, patientId, mode }: PatientFormProps) {
             onChange={(v) => set("alergia", v)}
             name="alergia-cond"
           />
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <User className="h-5 w-5 text-primary" />
-            Dados Pessoais
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="grid gap-5 md:grid-cols-2">
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="nome">Nome completo *</Label>
-            <Input
-              id="nome"
-              value={data.nome}
-              onChange={(e) => set("nome", e.target.value)}
-              required
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="cpf">CPF</Label>
-            <Input
-              id="cpf"
-              value={data.cpf}
-              onChange={(e) => {
-                const raw = e.target.value.replace(/\D/g, "").substring(0, 11);
-                const formatted = raw
-                  .replace(/(\d{3})(\d)/, "$1.$2")
-                  .replace(/(\d{3})(\d)/, "$1.$2")
-                  .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
-                set("cpf", formatted);
-              }}
-              placeholder="000.000.000-00"
-              maxLength={14}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="dataNascimento">Data de nascimento</Label>
-            <Input
-              id="dataNascimento"
-              type="date"
-              value={data.dataNascimento}
-              onChange={(e) => set("dataNascimento", e.target.value)}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="telefone">Telefone (WhatsApp)</Label>
-            <Input
-              id="telefone"
-              value={data.telefone}
-              onChange={(e) => set("telefone", e.target.value)}
-              placeholder="(00) 00000-0000"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={data.email}
-              onChange={(e) => set("email", e.target.value)}
-            />
-          </div>
-          <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="endereco">Endereço</Label>
-            <Input
-              id="endereco"
-              value={data.endereco}
-              onChange={(e) => set("endereco", e.target.value)}
-            />
-          </div>
         </CardContent>
       </Card>
 
